@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "sh -c 'if [ -z \"$DATABASE_URL\" ]; then echo \"Skipping prisma generate: DATABASE_URL not set\"; else npx prisma generate; fi'",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
