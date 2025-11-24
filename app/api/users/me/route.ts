@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { SkinType } from "@prisma/client";
+
+type SkinType = "DRY" | "OILY" | "COMBINATION" | "NORMAL";
 
 const validSkinTypes: SkinType[] = [
-  SkinType.DRY,
-  SkinType.OILY,
-  SkinType.COMBINATION,
-  SkinType.NORMAL,
+  "DRY",
+  "OILY",
+  "COMBINATION",
+  "NORMAL",
 ];
 
 const computeAge = (dob?: Date | null) => {
