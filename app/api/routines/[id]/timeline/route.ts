@@ -142,7 +142,9 @@ export async function GET(
     // Build timeline events - one per product showing started/ended status
     const events: TimelineEvent[] = [];
 
-    routineProducts.forEach((rp) => {
+    type RoutineProductWithProduct = (typeof routineProducts)[number];
+
+    routineProducts.forEach((rp: RoutineProductWithProduct) => {
       // Get expected timeframe: manual override first, then analysis
       const expectedTimeframe =
         rp.expectedResultsTimeframe ||
