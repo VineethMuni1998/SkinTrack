@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import type { Product, RoutineProduct } from "@prisma/client";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -45,7 +46,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const routineProducts = routine?.routineProducts ?? [];
+    type RoutineProductWithProduct = RoutineProduct & { product: Product };
+    const routineProducts =
+      (routine?.routineProducts as RoutineProductWithProduct[] | undefined) ?? [];
+
     const routineSummary = routineProducts.map((rp) => ({
       name: rp.product.name,
       brand: rp.product.brand,
