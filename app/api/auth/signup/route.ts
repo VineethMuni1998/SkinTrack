@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
     console.error("Signup error:", error);
 
     if (
-      error instanceof Prisma.PrismaClientInitializationError ||
-      error?.code === "P1001"
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P1001"
     ) {
       return NextResponse.json(
         { error: "Unable to connect to the database. Please try again later." },
