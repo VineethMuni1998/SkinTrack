@@ -45,14 +45,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const routineSummary =
-      routine?.routineProducts.map((rp) => ({
-        name: rp.product.name,
-        brand: rp.product.brand,
-        category: rp.product.category,
-        timeOfDay: rp.timeOfDay,
-        skipDays: rp.skipDays,
-      })) || [];
+    const routineProducts = routine?.routineProducts ?? [];
+    const routineSummary = routineProducts.map((rp) => ({
+      name: rp.product.name,
+      brand: rp.product.brand,
+      category: rp.product.category,
+      timeOfDay: rp.timeOfDay,
+      skipDays: rp.skipDays,
+    }));
 
     const systemPrompt = `You are SkinTrack's skincare assistant. You ONLY answer skincare-related questions, routines, ingredients, efficacy, safety, timing, layering, and product recommendations. Do not answer unrelated topics. If asked non-skincare, say: "I can only help with skincare."
 
