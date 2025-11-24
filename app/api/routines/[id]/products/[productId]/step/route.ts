@@ -7,15 +7,16 @@ export async function PATCH(
   context: { params: Promise<{ id: string; productId: string }> }
 ) {
   try {
-    const { id: contextRoutineId, productId: contextProductId } =
-      await context.params;
+    const params = await context.params;
+    const contextRoutineId = params?.id;
+    const contextRoutineProductId = params?.productId;
 
     const routineId =
       contextRoutineId ||
       request.nextUrl.pathname.split("/api/routines/")[1]?.split("/")[0];
     // In our UI this param actually holds the routineProductId
     const routineProductId =
-      contextProductId ||
+      contextRoutineProductId ||
       request.nextUrl.pathname.split("/products/")[1]?.split("/")[0];
 
     if (!routineId || !routineProductId) {
