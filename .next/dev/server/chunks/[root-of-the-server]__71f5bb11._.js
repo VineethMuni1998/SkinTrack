@@ -108,10 +108,11 @@ const authOptions = {
                 }
             },
             async authorize (credentials) {
-                if (!credentials?.email || !credentials?.password) {
+                const email = typeof credentials?.email === "string" ? credentials.email.toLowerCase().trim() : "";
+                const password = typeof credentials?.password === "string" ? credentials.password : "";
+                if (!email || !password) {
                     return null;
                 }
-                const email = typeof credentials.email === "string" ? credentials.email.toLowerCase().trim() : "";
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.findUnique({
                     where: {
                         email: email
@@ -120,7 +121,7 @@ const authOptions = {
                 if (!user || !user.password) {
                     return null;
                 }
-                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(credentials.password, user.password);
+                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(password, user.password);
                 if (!isPasswordValid) {
                     return null;
                 }
@@ -140,14 +141,17 @@ const authOptions = {
     },
     callbacks: {
         async jwt ({ token, user }) {
-            if (user) {
-                token.id = user.id;
+            const nextToken = token;
+            const userId = user?.id;
+            if (userId) {
+                nextToken.id = userId;
             }
-            return token;
+            return nextToken;
         },
         async session ({ session, token }) {
-            if (session.user && token.id) {
-                session.user.id = token.id;
+            const nextToken = token;
+            if (session.user && nextToken.id) {
+                session.user.id = nextToken.id;
             }
             return session;
         }
@@ -304,12 +308,12 @@ Return ONLY valid JSON, no additional text.`;
         };
         const safeTimeline = Array.isArray(parsed.timeline) ? parsed.timeline : [];
         const timeline = safeTimeline.map((item)=>{
-            const productId = resolveProductId(item.productId, item.productName);
+            const productId = resolveProductId(typeof item.productId === "string" ? item.productId : "", typeof item.productName === "string" ? item.productName : undefined);
             return {
                 productId,
-                productName: item.productName,
-                expectedResultsTime: item.expectedResultsTime,
-                description: item.description
+                productName: typeof item.productName === "string" ? item.productName : "",
+                expectedResultsTime: typeof item.expectedResultsTime === "string" ? item.expectedResultsTime : "",
+                description: typeof item.description === "string" ? item.description : ""
             };
         }).filter((item)=>!!item.productId);
         const interactions = parsed.interactions || {
@@ -326,13 +330,13 @@ Return ONLY valid JSON, no additional text.`;
         };
         const conflicts = (interactions.conflicts || []).map((conflict)=>({
                 productIds: normalizeIdsArray(conflict.productIds),
-                reason: conflict.reason,
-                recommendation: conflict.recommendation
+                reason: typeof conflict.reason === "string" ? conflict.reason : "",
+                recommendation: typeof conflict.recommendation === "string" ? conflict.recommendation : ""
             })).filter((entry)=>entry.productIds.length >= 2);
         const synergies = (interactions.synergies || []).map((synergy)=>({
                 productIds: normalizeIdsArray(synergy.productIds),
-                benefit: synergy.benefit,
-                description: synergy.description
+                benefit: typeof synergy.benefit === "string" ? synergy.benefit : "",
+                description: typeof synergy.description === "string" ? synergy.description : ""
             })).filter((entry)=>entry.productIds.length >= 2);
         const alignedSynergies = synergies.filter((entry)=>shareTimeBlock(entry.productIds));
         const crossTimeSynergies = synergies.filter((entry)=>!shareTimeBlock(entry.productIds));
@@ -340,6 +344,7 @@ Return ONLY valid JSON, no additional text.`;
             const names = entry.productIds.map((id)=>productById.get(id)?.name || id).join(" + ");
             return `Consider using ${names} in the same time block (e.g., both AM or both PM) if you want to layer them for synergy: ${entry.description}`;
         }) : [];
+        const baseRecommendations = Array.isArray(parsed.recommendations) ? parsed.recommendations.filter((item)=>typeof item === "string") : [];
         return {
             timeline,
             interactions: {
@@ -347,10 +352,10 @@ Return ONLY valid JSON, no additional text.`;
                 synergies: alignedSynergies
             },
             recommendations: [
-                ...parsed.recommendations || [],
+                ...baseRecommendations,
                 ...extraRecommendations
             ],
-            overallTimeline: parsed.overallTimeline || ""
+            overallTimeline: typeof parsed.overallTimeline === "string" ? parsed.overallTimeline : ""
         };
     } catch (error) {
         console.error("OpenAI analysis error:", error);

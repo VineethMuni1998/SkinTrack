@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/cloudinary";
+import { RoutineTimeOfDay } from "@prisma/client";
 
 const validDays = [
   "MONDAY",
@@ -20,13 +21,30 @@ const normalizeSkipDays = (value: unknown) => {
     .filter((v) => validDays.includes(v));
 };
 
+const parseTimeOfDay = (
+  value: unknown
+): RoutineTimeOfDay | null => {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toUpperCase();
+  if (
+    normalized === RoutineTimeOfDay.MORNING ||
+    normalized === RoutineTimeOfDay.NIGHT ||
+    normalized === RoutineTimeOfDay.BOTH
+  ) {
+    return normalized;
+  }
+  return null;
+};
+
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: contextRoutineId } = await context.params;
+
     const routineId =
-      context?.params?.id ||
+      contextRoutineId ||
       request.nextUrl.pathname.split("/api/routines/")[1]?.split("/")[0];
 
     if (!routineId) {
@@ -59,14 +77,15 @@ export async function POST(
     const body = await request.json();
     const { productId, timeOfDay, skipDays } = body;
 
-    if (!productId || !timeOfDay) {
+    const parsedTimeOfDay = parseTimeOfDay(timeOfDay);
+
+    if (!productId || !parsedTimeOfDay) {
       return NextResponse.json(
-        { error: "Product ID and time of day are required" },
+        { error: "Product ID and valid time of day are required" },
         { status: 400 }
       );
     }
 
-    const normalizedTime = String(timeOfDay).toUpperCase();
     const normalizedSkip = normalizeSkipDays(skipDays);
 
     const routine = await prisma.routine.findFirst({
@@ -87,7 +106,7 @@ export async function POST(
       where: {
         routineId,
         productId,
-        timeOfDay: normalizedTime,
+        timeOfDay: parsedTimeOfDay,
         removedAt: null,
       },
     });
@@ -102,20 +121,20 @@ export async function POST(
     const maxOrder = await prisma.routineProduct.aggregate({
       where: {
         routineId,
-        timeOfDay: normalizedTime,
+        timeOfDay: parsedTimeOfDay,
       },
       _max: {
         stepOrder: true,
       },
     });
 
-    const nextOrder = (maxOrder._max.stepOrder ?? 0) + 1;
+    const nextOrder = (maxOrder._max?.stepOrder ?? 0) + 1;
 
     const routineProduct = await prisma.routineProduct.create({
       data: {
         routineId,
         productId,
-        timeOfDay: normalizedTime,
+        timeOfDay: parsedTimeOfDay,
         skipDays: normalizedSkip,
         stepOrder: nextOrder,
       },
@@ -136,11 +155,13 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: contextRoutineId } = await context.params;
+
     const routineId =
-      context?.params?.id ||
+      contextRoutineId ||
       request.nextUrl.pathname.split("/api/routines/")[1]?.split("/")[0];
 
     if (!routineId) {
@@ -164,6 +185,7 @@ export async function DELETE(
     const routineProductId = searchParams.get("routineProductId");
     const timeOfDay = searchParams.get("timeOfDay");
     const permanent = searchParams.get("permanent") === "true";
+    const parsedTimeOfDay = parseTimeOfDay(timeOfDay);
 
     // Get removal reason from request body if provided
     let removalReason: string | null = null;
@@ -299,8 +321,8 @@ export async function DELETE(
           routineId,
           productId,
           removedAt: null,
-          ...(timeOfDay
-            ? { timeOfDay: String(timeOfDay).toUpperCase() }
+          ...(parsedTimeOfDay
+            ? { timeOfDay: parsedTimeOfDay }
             : {}),
         },
         data: {

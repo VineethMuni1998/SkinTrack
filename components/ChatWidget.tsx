@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import Image from "next/image";
 
 interface ChatMessage {
@@ -113,7 +113,7 @@ export default function ChatWidget() {
   const sendMessage = async () => {
     const content = input.trim();
     if (!content || loading) return;
-    const nextMessages = [...messages, { role: "user", content }];
+    const nextMessages: ChatMessage[] = [...messages, { role: "user", content }];
     setMessages(nextMessages);
     setInput("");
     setLoading(true);

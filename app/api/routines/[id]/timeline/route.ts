@@ -48,11 +48,13 @@ function parseTimeframeToDays(timeframe: string | null | undefined): number | nu
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: contextRoutineId } = await context.params;
+
     const routineId =
-      context?.params?.id ||
+      contextRoutineId ||
       request.nextUrl.pathname.split("/api/routines/")[1]?.split("/")[0];
 
     if (!routineId) {

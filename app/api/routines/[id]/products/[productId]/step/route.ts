@@ -4,15 +4,18 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string; productId: string } }
+  context: { params: Promise<{ id: string; productId: string }> }
 ) {
   try {
+    const { id: contextRoutineId, productId: contextProductId } =
+      await context.params;
+
     const routineId =
-      context?.params?.id ||
+      contextRoutineId ||
       request.nextUrl.pathname.split("/api/routines/")[1]?.split("/")[0];
     // In our UI this param actually holds the routineProductId
     const routineProductId =
-      context?.params?.productId ||
+      contextProductId ||
       request.nextUrl.pathname.split("/products/")[1]?.split("/")[0];
 
     if (!routineId || !routineProductId) {

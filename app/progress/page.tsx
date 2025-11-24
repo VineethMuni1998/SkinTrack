@@ -23,6 +23,7 @@ interface Photo {
 interface Routine {
   id: string;
   name?: string;
+  status?: string;
   startDate: string;
   routineProducts: Array<{
     product: {
@@ -201,4 +202,3 @@ export default function ProgressPage() {
     </div>
   );
 }
-

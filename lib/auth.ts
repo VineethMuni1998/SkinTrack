@@ -1,10 +1,13 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthConfig, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
+import type { JWT } from "next-auth/jwt";
 
-export const authOptions: NextAuthOptions = {
+type JWTWithId = JWT & { id?: string };
+
+export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as any,
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
@@ -18,14 +21,16 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
         const email =
-          typeof credentials.email === "string"
+          typeof credentials?.email === "string"
             ? credentials.email.toLowerCase().trim()
             : "";
+        const password =
+          typeof credentials?.password === "string" ? credentials.password : "";
+
+        if (!email || !password) {
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: {
@@ -38,7 +43,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const isPasswordValid = await bcrypt.compare(
-          credentials.password,
+          password,
           user.password
         );
 
@@ -61,15 +66,18 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+    async jwt({ token, user }): Promise<JWTWithId> {
+      const nextToken = token as JWTWithId;
+      const userId = (user as { id?: string } | undefined)?.id;
+      if (userId) {
+        nextToken.id = userId;
       }
-      return token;
+      return nextToken;
     },
-    async session({ session, token }) {
-      if (session.user && token.id) {
-        (session.user as any).id = token.id as string;
+    async session({ session, token }): Promise<Session> {
+      const nextToken = token as JWTWithId;
+      if (session.user && nextToken.id) {
+        (session.user as { id?: string }).id = nextToken.id;
       }
       return session;
     },

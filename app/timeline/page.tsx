@@ -6,18 +6,23 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import TimelineView from "@/components/TimelineView";
 
+type TimelineEventType = "product_started" | "product_ended";
+
 interface TimelineEvent {
   id: string;
-  type: "product_added" | "product_removed" | "photo_uploaded";
+  type: TimelineEventType;
   timestamp: string;
-  productId?: string;
-  productName?: string;
-  photoUrl?: string;
-  photoType?: string;
+  productId: string;
+  productName: string;
   expectedResultsTimeframe?: string;
   timeSinceAddition?: number;
   isTimeframePassed?: boolean;
-  routineProductId?: string;
+  routineProductId: string;
+  isRemoved: boolean;
+  removedAt?: string;
+  removalReason?: string;
+  beforePhotoUrl?: string;
+  afterPhotoUrl?: string;
 }
 
 interface Routine {
@@ -142,4 +147,3 @@ export default function TimelinePage() {
     </div>
   );
 }
-

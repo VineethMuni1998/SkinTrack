@@ -145,7 +145,12 @@ Return ONLY valid JSON, no additional text.`;
       throw new Error("No response from OpenAI");
     }
 
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(content) as Partial<AnalysisResult> & {
+      interactions?: unknown;
+      timeline?: unknown;
+      recommendations?: unknown;
+      overallTimeline?: unknown;
+    };
 
     // Validate and normalize product IDs in responses
     const knownIds = new Set(products.map((p) => p.id));
@@ -159,21 +164,35 @@ Return ONLY valid JSON, no additional text.`;
       return "";
     };
 
-    const safeTimeline = Array.isArray(parsed.timeline) ? parsed.timeline : [];
+    const safeTimeline = Array.isArray(parsed.timeline)
+      ? (parsed.timeline as Array<Record<string, unknown>>)
+      : [];
     const timeline = safeTimeline
-      .map((item: any) => {
-        const productId = resolveProductId(item.productId, item.productName);
+      .map((item) => {
+        const productId = resolveProductId(
+          typeof item.productId === "string" ? item.productId : "",
+          typeof item.productName === "string" ? item.productName : undefined
+        );
       return {
         productId,
-        productName: item.productName,
-        expectedResultsTime: item.expectedResultsTime,
-        description: item.description,
+        productName:
+          typeof item.productName === "string" ? item.productName : "",
+        expectedResultsTime:
+          typeof item.expectedResultsTime === "string"
+            ? item.expectedResultsTime
+            : "",
+        description: typeof item.description === "string" ? item.description : "",
       };
     })
       .filter((item) => !!item.productId);
 
-    const interactions = parsed.interactions || { conflicts: [], synergies: [] };
-    const normalizeIdsArray = (arr: any) =>
+    const interactions =
+      (parsed.interactions as {
+        conflicts?: Array<Record<string, unknown>>;
+        synergies?: Array<Record<string, unknown>>;
+      }) || { conflicts: [], synergies: [] };
+
+    const normalizeIdsArray = (arr: unknown) =>
       Array.isArray(arr)
         ? arr
             .map((id) => (typeof id === "string" ? id : ""))
@@ -192,18 +211,22 @@ Return ONLY valid JSON, no additional text.`;
     };
 
     const conflicts = (interactions.conflicts || [])
-      .map((conflict: any) => ({
+      .map((conflict) => ({
         productIds: normalizeIdsArray(conflict.productIds),
-        reason: conflict.reason,
-        recommendation: conflict.recommendation,
+        reason: typeof conflict.reason === "string" ? conflict.reason : "",
+        recommendation:
+          typeof conflict.recommendation === "string"
+            ? conflict.recommendation
+            : "",
       }))
       .filter((entry) => entry.productIds.length >= 2);
 
     const synergies = (interactions.synergies || [])
-      .map((synergy: any) => ({
+      .map((synergy) => ({
         productIds: normalizeIdsArray(synergy.productIds),
-        benefit: synergy.benefit,
-        description: synergy.description,
+        benefit: typeof synergy.benefit === "string" ? synergy.benefit : "",
+        description:
+          typeof synergy.description === "string" ? synergy.description : "",
       }))
       .filter((entry) => entry.productIds.length >= 2);
 
@@ -224,14 +247,21 @@ Return ONLY valid JSON, no additional text.`;
           })
         : [];
 
+    const baseRecommendations = Array.isArray(parsed.recommendations)
+      ? parsed.recommendations.filter(
+          (item): item is string => typeof item === "string"
+        )
+      : [];
+
     return {
       timeline,
       interactions: {
         conflicts,
         synergies: alignedSynergies,
       },
-      recommendations: [...(parsed.recommendations || []), ...extraRecommendations],
-      overallTimeline: parsed.overallTimeline || "",
+      recommendations: [...baseRecommendations, ...extraRecommendations],
+      overallTimeline:
+        typeof parsed.overallTimeline === "string" ? parsed.overallTimeline : "",
     };
   } catch (error) {
     console.error("OpenAI analysis error:", error);

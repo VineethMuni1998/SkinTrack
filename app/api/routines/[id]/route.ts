@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -18,7 +20,7 @@ export async function GET(
 
     const routine = await prisma.routine.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
       include: {
@@ -59,9 +61,11 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -77,7 +81,7 @@ export async function PATCH(
     // Verify routine belongs to user
     const existingRoutine = await prisma.routine.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
     });
@@ -92,7 +96,7 @@ export async function PATCH(
     // Update routine
     const routine = await prisma.routine.update({
       where: {
-        id: params.id,
+        id,
       },
       data: {
         ...(name !== undefined && { name }),
@@ -112,7 +116,7 @@ export async function PATCH(
       // Get current products
       const currentProducts = await prisma.routineProduct.findMany({
         where: {
-          routineId: params.id,
+          routineId: id,
           removedAt: null,
         },
       });
@@ -129,7 +133,7 @@ export async function PATCH(
       if (productsToAdd.length > 0) {
         await prisma.routineProduct.createMany({
           data: productsToAdd.map((productId: string) => ({
-            routineId: params.id,
+            routineId: id,
             productId,
           })),
         });
@@ -139,7 +143,7 @@ export async function PATCH(
       if (productsToRemove.length > 0) {
         await prisma.routineProduct.updateMany({
           where: {
-            routineId: params.id,
+            routineId: id,
             productId: { in: productsToRemove },
             removedAt: null,
           },
@@ -151,7 +155,7 @@ export async function PATCH(
     }
 
     const updatedRoutine = await prisma.routine.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         routineProducts: {
           include: {

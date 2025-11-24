@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { SkinType } from "@prisma/client";
 
-const validSkinTypes = ["DRY", "OILY", "COMBINATION", "NORMAL"];
+const validSkinTypes: SkinType[] = [
+  SkinType.DRY,
+  SkinType.OILY,
+  SkinType.COMBINATION,
+  SkinType.NORMAL,
+];
 
 const computeAge = (dob?: Date | null) => {
   if (!dob) return undefined;
@@ -85,6 +91,12 @@ export async function PATCH(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const { age, skinType, name, dateOfBirth } = body;
 
+  const hasSkinType = skinType !== undefined;
+  const normalizedSkinType =
+    hasSkinType && skinType !== null && typeof skinType === "string"
+      ? (skinType.trim().toUpperCase() as SkinType)
+      : null;
+
   let dob: Date | null = null;
   if (dateOfBirth !== undefined) {
     dob = parseDateOfBirth(dateOfBirth);
@@ -103,7 +115,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  if (skinType !== undefined && !validSkinTypes.includes(String(skinType).toUpperCase())) {
+  if (hasSkinType && normalizedSkinType && !validSkinTypes.includes(normalizedSkinType)) {
     return NextResponse.json(
       { error: "Invalid skin type" },
       { status: 400 }
@@ -115,7 +127,7 @@ export async function PATCH(request: NextRequest) {
     data: {
       ...(dob ? { dateOfBirth: dob } : {}),
       ...(age !== undefined ? { age } : {}),
-      ...(skinType !== undefined ? { skinType: String(skinType).toUpperCase() } : {}),
+      ...(hasSkinType ? { skinType: normalizedSkinType ?? null } : {}),
       ...(name !== undefined ? { name } : {}),
     },
     select: {

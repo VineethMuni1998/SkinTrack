@@ -108,10 +108,11 @@ const authOptions = {
                 }
             },
             async authorize (credentials) {
-                if (!credentials?.email || !credentials?.password) {
+                const email = typeof credentials?.email === "string" ? credentials.email.toLowerCase().trim() : "";
+                const password = typeof credentials?.password === "string" ? credentials.password : "";
+                if (!email || !password) {
                     return null;
                 }
-                const email = typeof credentials.email === "string" ? credentials.email.toLowerCase().trim() : "";
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.findUnique({
                     where: {
                         email: email
@@ -120,7 +121,7 @@ const authOptions = {
                 if (!user || !user.password) {
                     return null;
                 }
-                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(credentials.password, user.password);
+                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(password, user.password);
                 if (!isPasswordValid) {
                     return null;
                 }
@@ -140,14 +141,17 @@ const authOptions = {
     },
     callbacks: {
         async jwt ({ token, user }) {
-            if (user) {
-                token.id = user.id;
+            const nextToken = token;
+            const userId = user?.id;
+            if (userId) {
+                nextToken.id = userId;
             }
-            return token;
+            return nextToken;
         },
         async session ({ session, token }) {
-            if (session.user && token.id) {
-                session.user.id = token.id;
+            const nextToken = token;
+            if (session.user && nextToken.id) {
+                session.user.id = nextToken.id;
             }
             return session;
         }
@@ -189,14 +193,16 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$auth$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/auth.ts [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/prisma.ts [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
+;
 ;
 ;
 ;
 const validSkinTypes = [
-    "DRY",
-    "OILY",
-    "COMBINATION",
-    "NORMAL"
+    __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["SkinType"].DRY,
+    __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["SkinType"].OILY,
+    __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["SkinType"].COMBINATION,
+    __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["SkinType"].NORMAL
 ];
 const computeAge = (dob)=>{
     if (!dob) return undefined;
@@ -268,6 +274,8 @@ async function PATCH(request) {
     }
     const body = await request.json().catch(()=>({}));
     const { age, skinType, name, dateOfBirth } = body;
+    const hasSkinType = skinType !== undefined;
+    const normalizedSkinType = hasSkinType && skinType !== null && typeof skinType === "string" ? skinType.trim().toUpperCase() : null;
     let dob = null;
     if (dateOfBirth !== undefined) {
         dob = parseDateOfBirth(dateOfBirth);
@@ -286,7 +294,7 @@ async function PATCH(request) {
             status: 400
         });
     }
-    if (skinType !== undefined && !validSkinTypes.includes(String(skinType).toUpperCase())) {
+    if (hasSkinType && normalizedSkinType && !validSkinTypes.includes(normalizedSkinType)) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: "Invalid skin type"
         }, {
@@ -304,8 +312,8 @@ async function PATCH(request) {
             ...age !== undefined ? {
                 age
             } : {},
-            ...skinType !== undefined ? {
-                skinType: String(skinType).toUpperCase()
+            ...hasSkinType ? {
+                skinType: normalizedSkinType ?? null
             } : {},
             ...name !== undefined ? {
                 name

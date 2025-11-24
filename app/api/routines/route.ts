@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { RoutineTimeOfDay } from "@prisma/client";
 
 const validDays = [
   "MONDAY",
@@ -12,11 +13,27 @@ const validDays = [
   "SUNDAY",
 ];
 
-const normalizeSkipDays = (value: unknown) => {
+const normalizeSkipDays = (value: unknown): string[] => {
   if (!Array.isArray(value)) return [];
   return value
     .map((v) => (typeof v === "string" ? v.trim().toUpperCase() : ""))
     .filter((v) => validDays.includes(v));
+};
+
+const parseTimeOfDay = (
+  value: unknown,
+  defaultValue: RoutineTimeOfDay = RoutineTimeOfDay.MORNING
+): RoutineTimeOfDay => {
+  if (typeof value !== "string") return defaultValue;
+  const normalized = value.trim().toUpperCase();
+  if (
+    normalized === RoutineTimeOfDay.MORNING ||
+    normalized === RoutineTimeOfDay.NIGHT ||
+    normalized === RoutineTimeOfDay.BOTH
+  ) {
+    return normalized;
+  }
+  return defaultValue;
 };
 
 export async function GET(request: NextRequest) {
@@ -112,10 +129,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, products } = body;
 
-    const stepCounters: Record<string, number> = {
-      MORNING: 0,
-      NIGHT: 0,
-      BOTH: 0,
+    const stepCounters: Record<RoutineTimeOfDay, number> = {
+      [RoutineTimeOfDay.MORNING]: 0,
+      [RoutineTimeOfDay.NIGHT]: 0,
+      [RoutineTimeOfDay.BOTH]: 0,
     };
 
     const routine = await prisma.routine.create({
@@ -125,8 +142,14 @@ export async function POST(request: NextRequest) {
         routineProducts: {
           create:
             products?.map(
-              (product: { productId: string; timeOfDay?: string }) => {
-                const normalizedTime = (product.timeOfDay ?? "MORNING").toUpperCase();
+              (
+                product: {
+                  productId: string;
+                  timeOfDay?: string;
+                  skipDays?: unknown;
+                }
+              ) => {
+                const normalizedTime = parseTimeOfDay(product.timeOfDay);
                 stepCounters[normalizedTime] = (stepCounters[normalizedTime] || 0) + 1;
                 return {
                   productId: product.productId,

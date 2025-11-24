@@ -108,10 +108,11 @@ const authOptions = {
                 }
             },
             async authorize (credentials) {
-                if (!credentials?.email || !credentials?.password) {
+                const email = typeof credentials?.email === "string" ? credentials.email.toLowerCase().trim() : "";
+                const password = typeof credentials?.password === "string" ? credentials.password : "";
+                if (!email || !password) {
                     return null;
                 }
-                const email = typeof credentials.email === "string" ? credentials.email.toLowerCase().trim() : "";
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.findUnique({
                     where: {
                         email: email
@@ -120,7 +121,7 @@ const authOptions = {
                 if (!user || !user.password) {
                     return null;
                 }
-                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(credentials.password, user.password);
+                const isPasswordValid = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(password, user.password);
                 if (!isPasswordValid) {
                     return null;
                 }
@@ -140,14 +141,17 @@ const authOptions = {
     },
     callbacks: {
         async jwt ({ token, user }) {
-            if (user) {
-                token.id = user.id;
+            const nextToken = token;
+            const userId = user?.id;
+            if (userId) {
+                nextToken.id = userId;
             }
-            return token;
+            return nextToken;
         },
         async session ({ session, token }) {
-            if (session.user && token.id) {
-                session.user.id = token.id;
+            const nextToken = token;
+            if (session.user && nextToken.id) {
+                session.user.id = nextToken.id;
             }
             return session;
         }

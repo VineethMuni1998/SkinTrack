@@ -195,7 +195,7 @@ export default function ProductList({
                             }
                             onClick={() =>
                               onReorder(
-                                product.routineProductId,
+                                product.routineProductId!,
                                 "up",
                                 timeOfDayContext
                               )
@@ -217,7 +217,7 @@ export default function ProductList({
                             }
                             onClick={() =>
                               onReorder(
-                                product.routineProductId,
+                                product.routineProductId!,
                                 "down",
                                 timeOfDayContext
                               )
