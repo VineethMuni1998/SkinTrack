@@ -115,6 +115,7 @@ export async function GET(
         takenAt: "asc",
       },
     });
+    type RoutinePhoto = (typeof photos)[number];
 
     // Fetch latest analysis for expected timeframes
     const latestAnalysis = await prisma.analysis.findFirst({
@@ -165,7 +166,7 @@ export async function GET(
       let beforePhotoUrl: string | undefined;
       let afterPhotoUrl: string | undefined;
 
-      photos.forEach((photo) => {
+      photos.forEach((photo: RoutinePhoto) => {
         // Match photos by routineProductId for precise association
         if (photo.routineProductId === rp.id) {
           if (photo.type === "before") {
