@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[22016,["/_next/static/chunks/e778b4338956529b.js","/_next/static/chunks/796e69ae18b2784c.js"],""]
+3:I[97367,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/247eb132b7f7b574.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"buildId":"_ZleTUcPBhJML2f8tUe1B","rsc":["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100","children":["$","div",null,{"className":"text-center","children":[["$","h1",null,{"className":"text-4xl font-bold text-gray-900 mb-4","children":"SkinTrack"}],["$","p",null,{"className":"text-lg text-gray-600 mb-8","children":"Track your skincare journey"}],["$","div",null,{"className":"space-x-4","children":[["$","$L2",null,{"href":"/login","className":"px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition","children":"Login"}],["$","$L2",null,{"href":"/signup","className":"px-6 py-3 bg-white text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50 transition","children":"Sign Up"}]]}]]}]}],[["$","script","script-0",{"src":"/_next/static/chunks/796e69ae18b2784c.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+5:null

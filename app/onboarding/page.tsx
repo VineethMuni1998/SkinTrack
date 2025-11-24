@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -11,7 +11,7 @@ const skinTypes = [
   { value: "NORMAL", label: "Normal" },
 ];
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -143,5 +143,13 @@ export default function OnboardingPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <OnboardingContent />
+    </Suspense>
   );
 }
