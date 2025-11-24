@@ -1,8 +1,12 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const getOpenAI = () => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing OPENAI_API_KEY");
+  }
+  return new OpenAI({ apiKey });
+};
 
 const ANALYSIS_MODEL = process.env.OPENAI_ANALYSIS_MODEL || "gpt-4o-mini";
 const INGREDIENT_MODEL = process.env.OPENAI_INGREDIENT_MODEL || "gpt-4o-mini";
@@ -49,6 +53,7 @@ export async function analyzeProducts(
   products: ProductInfo[],
   userContext?: UserContext
 ): Promise<AnalysisResult> {
+  const openai = getOpenAI();
   const productsList = products.map((p) => ({
     id: p.id,
     name: p.name,
@@ -282,9 +287,7 @@ export async function fetchProductIngredients({
   category,
   description,
 }: IngredientPromptInput): Promise<string> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("Missing OpenAI API key");
-  }
+  const openai = getOpenAI();
 
   const prompt = `You are a cosmetic chemist that researches skincare formulations using public information.
 Given the product details below, list the primary active skincare ingredients that are most likely present. Focus on well-known actives (e.g., retinol, niacinamide, peptides, hyaluronic acid).

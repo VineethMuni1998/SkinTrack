@@ -3,9 +3,13 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const getOpenAI = () => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing OPENAI_API_KEY");
+  }
+  return new OpenAI({ apiKey });
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -79,7 +83,7 @@ Rules:
 - If a question is not about skincare, refuse politely.
 - Be concise and actionable.`;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: process.env.OPENAI_ANALYSIS_MODEL || "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
