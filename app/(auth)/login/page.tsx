@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { status } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const callbackUrl = searchParams?.get("callbackUrl") || "/routine";
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,13 +31,13 @@ export default function LoginPage() {
         email: email.toLowerCase().trim(),
         password,
         redirect: false,
+        callbackUrl,
       });
 
       if (result?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/routine");
-        router.refresh();
+        router.replace(callbackUrl);
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
