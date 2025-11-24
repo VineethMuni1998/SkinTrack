@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { RoutineTimeOfDay } from "@prisma/client";
+
+type RoutineTimeOfDay = "MORNING" | "NIGHT" | "BOTH";
 
 const validDays = [
   "MONDAY",
@@ -22,16 +23,16 @@ const normalizeSkipDays = (value: unknown): string[] => {
 
 const parseTimeOfDay = (
   value: unknown,
-  defaultValue: RoutineTimeOfDay = RoutineTimeOfDay.MORNING
+  defaultValue: RoutineTimeOfDay = "MORNING"
 ): RoutineTimeOfDay => {
   if (typeof value !== "string") return defaultValue;
   const normalized = value.trim().toUpperCase();
   if (
-    normalized === RoutineTimeOfDay.MORNING ||
-    normalized === RoutineTimeOfDay.NIGHT ||
-    normalized === RoutineTimeOfDay.BOTH
+    normalized === "MORNING" ||
+    normalized === "NIGHT" ||
+    normalized === "BOTH"
   ) {
-    return normalized;
+    return normalized as RoutineTimeOfDay;
   }
   return defaultValue;
 };
@@ -130,9 +131,9 @@ export async function POST(request: NextRequest) {
     const { name, products } = body;
 
     const stepCounters: Record<RoutineTimeOfDay, number> = {
-      [RoutineTimeOfDay.MORNING]: 0,
-      [RoutineTimeOfDay.NIGHT]: 0,
-      [RoutineTimeOfDay.BOTH]: 0,
+      MORNING: 0,
+      NIGHT: 0,
+      BOTH: 0,
     };
 
     const routine = await prisma.routine.create({

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadImage } from "@/lib/cloudinary";
-import { RoutineTimeOfDay } from "@prisma/client";
+
+type RoutineTimeOfDay = "MORNING" | "NIGHT" | "BOTH";
 
 const validDays = [
   "MONDAY",
@@ -21,17 +22,15 @@ const normalizeSkipDays = (value: unknown) => {
     .filter((v) => validDays.includes(v));
 };
 
-const parseTimeOfDay = (
-  value: unknown
-): RoutineTimeOfDay | null => {
+const parseTimeOfDay = (value: unknown): RoutineTimeOfDay | null => {
   if (typeof value !== "string") return null;
   const normalized = value.trim().toUpperCase();
   if (
-    normalized === RoutineTimeOfDay.MORNING ||
-    normalized === RoutineTimeOfDay.NIGHT ||
-    normalized === RoutineTimeOfDay.BOTH
+    normalized === "MORNING" ||
+    normalized === "NIGHT" ||
+    normalized === "BOTH"
   ) {
-    return normalized;
+    return normalized as RoutineTimeOfDay;
   }
   return null;
 };
