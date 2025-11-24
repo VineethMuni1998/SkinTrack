@@ -121,7 +121,10 @@ export async function PATCH(
         },
       });
 
-      const currentProductIds = currentProducts.map((rp) => rp.productId);
+      type RoutineProduct = (typeof currentProducts)[number];
+      const currentProductIds = currentProducts.map(
+        (rp: RoutineProduct) => rp.productId
+      );
       const productsToAdd = productIds.filter(
         (id: string) => !currentProductIds.includes(id)
       );
