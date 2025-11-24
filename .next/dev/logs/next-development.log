@@ -1,0 +1,6 @@
+[00:00:00.654] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:00.733] Server  LOG      ✓ Ready in 565ms
+[10:13:12.319] Server  WARN    Error: Route "/api/routines/[id]/timeline" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[10:13:12.345] Server  WARN    Error: Route "/api/routines/[id]/timeline" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[33:09:12.705] Server  WARN    Error: Route "/api/routines/[id]/timeline" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[33:09:12.746] Server  WARN    Error: Route "/api/routines/[id]/timeline" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
