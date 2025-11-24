@@ -37,8 +37,12 @@ export async function GET(request: NextRequest) {
     });
 
     // Fetch product information for photos with routineProductId
+    type PhotoWithRoutine = Awaited<
+      ReturnType<typeof prisma.photo.findMany>
+    >[number];
+
     const photosWithProducts = await Promise.all(
-      photos.map(async (photo) => {
+      photos.map(async (photo: PhotoWithRoutine) => {
         if (photo.routineProductId) {
           const routineProduct = await prisma.routineProduct.findUnique({
             where: { id: photo.routineProductId },
