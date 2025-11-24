@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { analyzeProducts } from "@/lib/openai";
-import type { Prisma } from "@prisma/client";
 
 const computeAge = (dob?: Date | null) => {
   if (!dob) return undefined;
@@ -77,9 +76,8 @@ export async function POST(request: NextRequest) {
     const derivedAge = computeAge(user?.dateOfBirth) ?? user?.age ?? undefined;
 
     // Prepare products for analysis
-    type RoutineProductWithProduct = Prisma.RoutineProductGetPayload<{
-      include: { product: true };
-    }>;
+    type RoutineProductWithProduct =
+      (typeof routine.routineProducts)[number];
 
     const products = routine.routineProducts.map((rp: RoutineProductWithProduct) => ({
       id: rp.product.id,
