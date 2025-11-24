@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
@@ -64,8 +63,10 @@ export async function POST(request: NextRequest) {
     console.error("Signup error:", error);
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P1001"
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as { code?: string }).code === "P1001"
     ) {
       return NextResponse.json(
         { error: "Unable to connect to the database. Please try again later." },
