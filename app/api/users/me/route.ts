@@ -85,8 +85,16 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   const session = await auth();
+
+  // Debug logging for production
+  console.log("PATCH /api/users/me - Session:", JSON.stringify(session, null, 2));
+
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.log("PATCH /api/users/me - No user ID in session");
+    return NextResponse.json(
+      { error: "Session expired. Please log in again." },
+      { status: 401 }
+    );
   }
 
   const body = await request.json().catch(() => ({}));
@@ -123,30 +131,38 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const updated = await prisma.user.update({
-    where: { id: session.user.id },
-    data: {
-      ...(dob ? { dateOfBirth: dob } : {}),
-      ...(age !== undefined ? { age } : {}),
-      ...(hasSkinType ? { skinType: normalizedSkinType ?? null } : {}),
-      ...(name !== undefined ? { name } : {}),
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      age: true,
-      dateOfBirth: true,
-      skinType: true,
-    },
-  });
+  try {
+    const updated = await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        ...(dob ? { dateOfBirth: dob } : {}),
+        ...(age !== undefined ? { age } : {}),
+        ...(hasSkinType ? { skinType: normalizedSkinType ?? null } : {}),
+        ...(name !== undefined ? { name } : {}),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        age: true,
+        dateOfBirth: true,
+        skinType: true,
+      },
+    });
 
-  const computedAge = computeAge(updated.dateOfBirth);
+    const computedAge = computeAge(updated.dateOfBirth);
 
-  return NextResponse.json({
-    user: {
-      ...updated,
-      age: computedAge ?? updated.age ?? null,
-    },
-  });
+    return NextResponse.json({
+      user: {
+        ...updated,
+        age: computedAge ?? updated.age ?? null,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return NextResponse.json(
+      { error: "Failed to update profile. Please try again." },
+      { status: 500 }
+    );
+  }
 }

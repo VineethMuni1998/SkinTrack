@@ -12,7 +12,7 @@ const skinTypes = [
 ];
 
 function OnboardingContent() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -68,6 +68,11 @@ function OnboardingContent() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        // If unauthorized, redirect to login
+        if (res.status === 401) {
+          router.push("/login?callbackUrl=/onboarding");
+          return;
+        }
         throw new Error(data?.error || "Failed to save profile");
       }
       router.push(next);
