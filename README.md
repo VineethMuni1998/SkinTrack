@@ -13,6 +13,7 @@ A web application to track your skincare routine and see how effective products 
   - Personalized recommendations
 - **Progress Tracking**: Visual timeline and before/after photo comparisons
 - **Dashboard**: Overview of your current routine and recent photos
+- **Password Recovery**: Email-based password reset flow
 
 ## Tech Stack
 
@@ -31,6 +32,7 @@ A web application to track your skincare routine and see how effective products 
 - PostgreSQL database
 - OpenAI API key
 - Cloudinary account (for image storage)
+- SMTP credentials (for password reset emails)
 
 ### Installation
 
@@ -58,6 +60,7 @@ Edit `.env` and add your configuration:
 - `CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name
 - `CLOUDINARY_API_KEY`: Your Cloudinary API key
 - `CLOUDINARY_API_SECRET`: Your Cloudinary API secret
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`: SMTP credentials for sending password reset emails
 
 4. Set up the database:
 ```bash

@@ -8,6 +8,7 @@ This guide will walk you through getting all the API keys and credentials needed
 2. **NextAuth Secret** (NEXTAUTH_SECRET)
 3. **OpenAI API** (OPENAI_API_KEY)
 4. **Cloudinary** (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET)
+5. **SMTP Email** (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM)
 
 ---
 
@@ -139,6 +140,31 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 ---
 
+## 5. SMTP Email (Password Reset Links)
+
+You need SMTP credentials so the app can send password reset emails.
+
+### Option A: Mailtrap (Free Sandbox)
+1. Go to [https://mailtrap.io](https://mailtrap.io) and create a free account
+2. Create an "Email Testing" inbox
+3. Open **SMTP Settings** and copy the **host**, **port**, **username**, and **password**
+4. Use `no-reply@your-domain.com` (or the default Mailtrap sender) for `EMAIL_FROM`
+
+### Option B: Existing Provider
+- Gmail: enable 2FA, create an **App Password**, and use `smtp.gmail.com`, port `587`
+- Any SMTP provider works as long as you have host, port, username, password, and a valid from email
+
+**Add to .env:**
+```
+SMTP_HOST=smtp.your-provider.com
+SMTP_PORT=587
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+EMAIL_FROM="SkinTrack <no-reply@your-domain.com>"
+```
+
+---
+
 ## Complete .env File Template
 
 Once you have all credentials, your `.env` file should look like:
@@ -158,6 +184,13 @@ OPENAI_API_KEY="sk-your-openai-key-here"
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
 CLOUDINARY_API_KEY="your-api-key"
 CLOUDINARY_API_SECRET="your-api-secret"
+
+# Email (SMTP) for password resets
+SMTP_HOST="smtp.your-provider.com"
+SMTP_PORT=587
+SMTP_USER="smtp-user"
+SMTP_PASS="smtp-password"
+EMAIL_FROM="SkinTrack <no-reply@your-domain.com>"
 ```
 
 ---
@@ -230,4 +263,3 @@ After setting up all credentials:
 ## Need Help?
 
 If you get stuck on any step, let me know which service you're having trouble with!
-

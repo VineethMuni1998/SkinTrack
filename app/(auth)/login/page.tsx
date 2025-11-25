@@ -14,6 +14,11 @@ function LoginContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const callbackUrl = searchParams?.get("callbackUrl") || "/routine";
+  const successMessage = searchParams?.get("registered")
+    ? "Account created successfully. Please log in."
+    : searchParams?.get("reset")
+    ? "Password reset successful. Please log in."
+    : "";
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -56,6 +61,11 @@ function LoginContent() {
             {error}
           </div>
         )}
+        {successMessage && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+            {successMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -68,7 +78,7 @@ function LoginContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-black"
               placeholder="your@email.com"
             />
           </div>
@@ -83,9 +93,14 @@ function LoginContent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-black"
               placeholder="••••••••"
             />
+            <div className="mt-2 text-sm">
+              <Link href="/forgot-password" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                Forgot your password?
+              </Link>
+            </div>
           </div>
 
           <button

@@ -9,7 +9,12 @@ const requiredVars = [
   'OPENAI_API_KEY',
   'CLOUDINARY_CLOUD_NAME',
   'CLOUDINARY_API_KEY',
-  'CLOUDINARY_API_SECRET'
+  'CLOUDINARY_API_SECRET',
+  'SMTP_HOST',
+  'SMTP_PORT',
+  'SMTP_USER',
+  'SMTP_PASS',
+  'EMAIL_FROM'
 ];
 
 require('dotenv').config();
@@ -39,4 +44,3 @@ if (allSet) {
 }
 
 process.exit(allSet ? 0 : 1);
-
