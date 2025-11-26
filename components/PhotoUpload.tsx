@@ -5,26 +5,37 @@ import { useSession } from "next-auth/react";
 
 interface PhotoUploadProps {
   routineId?: string;
+  routineProductId?: string;
   type: "before" | "after";
   onUploadSuccess?: () => void | Promise<void>;
   label?: string;
   buttonLabel?: string;
   inputId?: string;
+  enableNotes?: boolean;
+  noteLabel?: string;
+  notePlaceholder?: string;
+  maxNoteLength?: number;
 }
 
 export default function PhotoUpload({
   routineId,
+  routineProductId,
   type,
   onUploadSuccess,
   label,
   buttonLabel,
   inputId,
+  enableNotes = false,
+  noteLabel,
+  notePlaceholder,
+  maxNoteLength = 500,
 }: PhotoUploadProps) {
   const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [note, setNote] = useState("");
   const generatedInputId = useId();
   const uploadInputId = inputId ?? generatedInputId;
   const selectorLabel = label ?? `Select ${type} photo`;
@@ -65,6 +76,13 @@ export default function PhotoUpload({
       if (routineId) {
         formData.append("routineId", routineId);
       }
+      if (routineProductId) {
+        formData.append("routineProductId", routineProductId);
+      }
+      const trimmedNote = note.trim();
+      if (enableNotes && trimmedNote) {
+        formData.append("note", trimmedNote);
+      }
 
       const response = await fetch("/api/photos/upload", {
         method: "POST",
@@ -80,6 +98,7 @@ export default function PhotoUpload({
       // Reset form
       setFile(null);
       setPreview(null);
+      setNote("");
       if (onUploadSuccess) {
         await onUploadSuccess();
       }
@@ -137,6 +156,28 @@ export default function PhotoUpload({
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           {error}
+        </div>
+      )}
+
+      {enableNotes && (
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
+            {noteLabel ?? "Add a note"}
+          </label>
+          <textarea
+            value={note}
+            onChange={(e) => {
+              if (e.target.value.length <= maxNoteLength) {
+                setNote(e.target.value);
+              }
+            }}
+            placeholder={notePlaceholder ?? "How's your skin this week?"}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+            rows={3}
+          />
+          <div className="text-right text-xs text-gray-500">
+            {note.length}/{maxNoteLength} characters
+          </div>
         </div>
       )}
 

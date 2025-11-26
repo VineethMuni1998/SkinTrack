@@ -19,6 +19,11 @@ export async function POST(request: NextRequest) {
     const routineId = formData.get("routineId") as string | null;
     const routineProductId = formData.get("routineProductId") as string | null;
     const type = formData.get("type") as string; // "before" or "after"
+    const noteInput = formData.get("note");
+    const note =
+      typeof noteInput === "string"
+        ? noteInput.trim() || null
+        : null;
 
     if (!file) {
       return NextResponse.json(
@@ -45,6 +50,7 @@ export async function POST(request: NextRequest) {
         routineProductId: routineProductId || null,
         url: imageUrl,
         type,
+        note,
       },
     });
 

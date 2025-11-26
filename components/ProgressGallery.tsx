@@ -4,6 +4,7 @@ interface Photo {
   id: string;
   url: string;
   type: string;
+  note?: string | null;
   takenAt: string;
   createdAt: string;
   product?: {
@@ -15,11 +16,13 @@ interface Photo {
 interface ProgressGalleryProps {
   photos: Photo[];
   onPhotoClick?: (photo: Photo) => void;
+  onDelete?: (photo: Photo) => void;
 }
 
 export default function ProgressGallery({
   photos,
   onPhotoClick,
+  onDelete,
 }: ProgressGalleryProps) {
   if (photos.length === 0) {
     return (
@@ -69,7 +72,7 @@ export default function ProgressGallery({
             {afterPhotos.map((photo) => (
               <div
                 key={photo.id}
-                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-indigo-500 transition"
+                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-indigo-500 transition group"
                 onClick={() => onPhotoClick?.(photo)}
               >
                 <img
@@ -77,10 +80,27 @@ export default function ProgressGallery({
                   alt="After photo"
                   className="w-full h-full object-cover"
                 />
+                {onDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(photo);
+                    }}
+                    className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full bg-white/90 text-gray-800 border border-gray-200 opacity-0 group-hover:opacity-100 transition hover:bg-white"
+                    aria-label="Delete photo"
+                  >
+                    ✕
+                  </button>
+                )}
                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-2">
                   <div>{new Date(photo.takenAt).toLocaleDateString()}</div>
                   {photo.product && (
                     <div className="font-semibold mt-1">{photo.product.name}</div>
+                  )}
+                  {photo.note && photo.note.trim() && (
+                    <div className="mt-1 text-[11px] opacity-80 max-h-9 overflow-hidden">
+                      {photo.note}
+                    </div>
                   )}
                 </div>
               </div>
@@ -91,4 +111,3 @@ export default function ProgressGallery({
     </div>
   );
 }
-

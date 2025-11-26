@@ -129,6 +129,7 @@ model Photo {
   routineProductId String?  // Associate photo with specific product
   url             String
   type            String   // "before" or "after"
+  note            String?  @db.Text
   takenAt         DateTime @default(now())
   createdAt       DateTime @default(now())
   

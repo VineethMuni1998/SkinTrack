@@ -27,7 +27,10 @@ interface RoutinePhoto {
   id: string;
   url: string;
   type: string;
+  note?: string | null;
   takenAt: string;
+  createdAt: string;
+  routineId?: string | null;
 }
 
 interface Routine {
@@ -72,6 +75,8 @@ export default function RoutinePage() {
   const [weeklyPhotosLoading, setWeeklyPhotosLoading] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
+  const [deletingWeeklyPhotoId, setDeletingWeeklyPhotoId] = useState<string | null>(null);
   const [reorderingProductId, setReorderingProductId] = useState<string | null>(null);
   const [usageMode, setUsageMode] = useState<UsageMode>("DAILY");
   const [skipDays, setSkipDays] = useState<string[]>([]);
@@ -141,17 +146,28 @@ export default function RoutinePage() {
     }
   };
 
-  const fetchWeeklyPhotos = async (routineId: string) => {
+  const fetchWeeklyPhotos = async (routineId?: string | null) => {
     setWeeklyPhotosLoading(true);
     try {
-      const response = await fetch(
-        `/api/photos?routineId=${routineId}&type=before`
-      );
+      const url = routineId
+        ? `/api/photos?routineId=${routineId}`
+        : "/api/photos";
+      const response = await fetch(url, { cache: "no-store" });
       if (!response.ok) {
         throw new Error("Failed to fetch weekly photos");
       }
       const data = await response.json();
-      setWeeklyPhotos((data.photos || []) as RoutinePhoto[]);
+      const photos = (data.photos || []) as RoutinePhoto[];
+      const filtered = routineId
+        ? photos.filter((photo) => photo.routineId === routineId)
+        : photos;
+      const fallback = filtered.length > 0 ? filtered : photos;
+      const sorted = fallback.sort((a, b) => {
+        const aDate = new Date(a.takenAt || a.createdAt).getTime();
+        const bDate = new Date(b.takenAt || b.createdAt).getTime();
+        return bDate - aDate;
+      });
+      setWeeklyPhotos(sorted);
     } catch (error) {
       console.error("Error fetching weekly photos:", error);
     } finally {
@@ -160,11 +176,7 @@ export default function RoutinePage() {
   };
 
   useEffect(() => {
-    if (routine?.id) {
-      fetchWeeklyPhotos(routine.id);
-    } else {
-      setWeeklyPhotos([]);
-    }
+    fetchWeeklyPhotos(routine?.id);
   }, [routine?.id]);
 
   useEffect(() => {
@@ -390,9 +402,7 @@ export default function RoutinePage() {
   const handleWeeklyUploadSuccess = async () => {
     const updatedRoutine = await fetchRoutine();
     const routineId = updatedRoutine?.id || routine?.id;
-    if (routineId) {
-      await fetchWeeklyPhotos(routineId);
-    }
+    await fetchWeeklyPhotos(routineId);
   };
 
   const handlePrevPhoto = () => {
@@ -407,6 +417,33 @@ export default function RoutinePage() {
     setCurrentPhotoIndex((prev) =>
       prev === weeklyPhotos.length - 1 ? 0 : prev + 1
     );
+  };
+
+  const handleDeleteWeeklyPhoto = async (photoId: string) => {
+    setDeletingWeeklyPhotoId(photoId);
+    try {
+      const response = await fetch("/api/photos", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoId }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to delete photo");
+      }
+      await fetchWeeklyPhotos(routine?.id);
+      const nextIndex = Math.max(0, currentPhotoIndex - 1);
+      setCurrentPhotoIndex(nextIndex);
+    } catch (error) {
+      console.error("Error deleting weekly photo:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete photo. Please try again."
+      );
+    } finally {
+      setDeletingWeeklyPhotoId(null);
+    }
   };
 
   const filteredProducts = allProducts.filter(
@@ -521,8 +558,10 @@ export default function RoutinePage() {
   );
   const allProductsForAnalysis = routineProducts.map((rp) => rp.product);
   const lastWeeklyPhoto = weeklyPhotos[0];
-  const lastCheckInDate = lastWeeklyPhoto
-    ? new Date(lastWeeklyPhoto.takenAt)
+  const lastCheckInDateSource =
+    lastWeeklyPhoto?.takenAt || lastWeeklyPhoto?.createdAt;
+  const lastCheckInDate = lastCheckInDateSource
+    ? new Date(lastCheckInDateSource)
     : null;
   const daysSinceCheckIn = lastCheckInDate
     ? Math.floor(
@@ -530,14 +569,19 @@ export default function RoutinePage() {
       )
     : null;
   const isWeeklyOverdue =
-    !lastCheckInDate || (daysSinceCheckIn !== null && daysSinceCheckIn > 7);
+    !weeklyPhotosLoading &&
+    (!lastCheckInDate || (daysSinceCheckIn !== null && daysSinceCheckIn >= 7));
   const lastCheckInLabel = lastCheckInDate
-    ? lastCheckInDate.toLocaleDateString("en-US", {
+    ? lastCheckInDate.toLocaleString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
       })
-    : "No check-ins yet";
+    : weeklyPhotosLoading
+      ? "Loading..."
+      : "No check-ins yet";
   const cautionMessage = lastCheckInDate
     ? `It's been ${daysSinceCheckIn} day${
         daysSinceCheckIn === 1 ? "" : "s"
@@ -545,6 +589,28 @@ export default function RoutinePage() {
     : "You haven't uploaded a weekly progress photo yet.";
   const currentProgressPhoto =
     weeklyPhotos.length > 0 ? weeklyPhotos[currentPhotoIndex] : null;
+  const showProgressNavigation = weeklyPhotos.length > 1;
+  const recentWeeklyPhotos = weeklyPhotos.slice(0, 3);
+  const formatDateKey = (dateValue: string) =>
+    new Date(dateValue).toDateString();
+  const calendarDates = Array.from(
+    new Set(
+      weeklyPhotos.map((photo) =>
+        formatDateKey(photo.takenAt || photo.createdAt)
+      )
+    )
+  );
+
+  const handleSelectCalendarDate = (dateKey: string) => {
+    const targetIndex = weeklyPhotos.findIndex(
+      (photo) => formatDateKey(photo.takenAt || photo.createdAt) === dateKey
+    );
+    if (targetIndex >= 0) {
+      setCurrentPhotoIndex(targetIndex);
+      setShowProgressModal(true);
+    }
+    setShowCalendarPicker(false);
+  };
 
   const getContextProducts = (context?: RoutineTimeOfDay) => {
     if (context === "MORNING") {
@@ -805,10 +871,10 @@ export default function RoutinePage() {
                 </div>
                 <button
                   onClick={() => setShowProgressModal(true)}
-                  disabled={weeklyPhotos.length === 0}
+                  disabled={weeklyPhotosLoading}
                   className={`text-sm px-4 py-2 rounded-lg border ${
                     weeklyPhotos.length === 0
-                      ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                      ? "border-gray-200 text-gray-500 hover:bg-gray-50"
                       : "border-indigo-200 text-indigo-700 hover:bg-indigo-50"
                   }`}
                 >
@@ -826,25 +892,86 @@ export default function RoutinePage() {
                 </div>
               )}
 
-              <p className="mt-4 text-sm text-gray-600">
-                Last check-in:{" "}
-                <span className="font-medium text-gray-900">
-                  {lastCheckInLabel}
-                </span>
-              </p>
-
               {weeklyPhotosLoading ? (
                 <p className="mt-4 text-sm text-gray-500">
                   Loading your progress photos...
                 </p>
               ) : (
-                <div className="mt-4">
+                <div className="mt-4 space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Last check-in:{" "}
+                    <span className="font-medium text-gray-900">
+                      {lastCheckInLabel}
+                    </span>
+                  </p>
+
+                  {lastWeeklyPhoto ? (
+                    <div className="flex flex-col sm:flex-row gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="sm:w-48 w-full">
+                        <img
+                          src={lastWeeklyPhoto.url}
+                          alt="Most recent weekly progress"
+                          className="w-full h-full object-cover rounded-lg bg-white"
+                        />
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <p className="text-sm text-gray-600">
+                          Uploaded {lastCheckInLabel}
+                        </p>
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                          {lastWeeklyPhoto.note && lastWeeklyPhoto.note.trim()
+                            ? lastWeeklyPhoto.note
+                            : "No note added for this check-in."}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-600">
+                      No check-ins yet. Upload your first weekly photo to start tracking.
+                    </div>
+                  )}
+
+                  {recentWeeklyPhotos.length > 1 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-gray-800">
+                        Recent check-ins
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {recentWeeklyPhotos.map((photo, idx) => (
+                          <div
+                            key={photo.id}
+                            className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-2"
+                          >
+                            <img
+                              src={photo.url}
+                              alt={`Weekly progress ${idx + 1}`}
+                              className="w-full h-32 object-cover rounded-md bg-gray-50"
+                            />
+                            <p className="text-xs text-gray-600">
+                              {new Date(photo.takenAt || photo.createdAt).toLocaleDateString(
+                                "en-US",
+                                { month: "short", day: "numeric", year: "numeric" }
+                              )}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <PhotoUpload
                     routineId={routine?.id}
-                    type="before"
-                    label="Select weekly progress photo"
+                    type="after"
+                    label={
+                      lastWeeklyPhoto
+                        ? "Add another weekly progress photo"
+                        : "Select weekly progress photo"
+                    }
                     buttonLabel="Upload check-in photo"
                     inputId="weekly-photo-upload"
+                    enableNotes
+                    noteLabel="Add a quick note (optional)"
+                    notePlaceholder="Describe changes, triggers, or products you used this week."
                     onUploadSuccess={handleWeeklyUploadSuccess}
                   />
                 </div>
@@ -891,29 +1018,58 @@ export default function RoutinePage() {
               <h3 className="text-lg font-semibold text-gray-900">
                 Weekly Progress Photos
               </h3>
-              <button
-                onClick={() => setShowProgressModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-                aria-label="Close progress modal"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-3">
+                {calendarDates.length > 0 && (
+                  <button
+                    onClick={() => setShowCalendarPicker((prev) => !prev)}
+                    className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+                  >
+                    {showCalendarPicker ? "Hide calendar" : "Calendar view"}
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowProgressModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                  aria-label="Close progress modal"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
+            {showCalendarPicker && calendarDates.length > 0 && (
+              <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <p className="text-sm font-medium text-gray-800 mb-2">Jump to date</p>
+                <div className="flex flex-wrap gap-2">
+                  {calendarDates.map((dateKey) => (
+                    <button
+                      key={dateKey}
+                      onClick={() => handleSelectCalendarDate(dateKey)}
+                      className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 bg-white hover:bg-indigo-50 hover:border-indigo-200 text-gray-900"
+                    >
+                      {new Date(dateKey).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {weeklyPhotos.length > 0 ? (
               <div className="flex flex-col items-center">
                 <div className="w-full flex items-center justify-between gap-4">
-                  <button
-                    onClick={handlePrevPhoto}
-                    disabled={weeklyPhotos.length <= 1}
-                    className={`p-2 rounded-full border ${
-                      weeklyPhotos.length <= 1
-                        ? "text-gray-300 border-gray-200 cursor-not-allowed"
-                        : "text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                    }`}
-                    aria-label="Previous photo"
-                  >
-                    {"<"}
-                  </button>
+                  {showProgressNavigation ? (
+                    <button
+                      onClick={handlePrevPhoto}
+                      className="h-10 w-10 flex items-center justify-center rounded-full border text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      aria-label="Previous photo"
+                    >
+                      {"<"}
+                    </button>
+                  ) : (
+                    <div className="w-10 h-10" aria-hidden />
+                  )}
                   <div className="flex-1 flex flex-col items-center">
                     {currentProgressPhoto && (
                       <>
@@ -922,34 +1078,56 @@ export default function RoutinePage() {
                           alt="Weekly progress"
                           className="max-h-[400px] w-full object-contain rounded-lg bg-gray-50"
                         />
-                        <p className="mt-3 text-sm text-gray-600">
-                          {new Date(
-                            currentProgressPhoto.takenAt
-                          ).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </p>
+                        <div className="mt-4 text-center space-y-2">
+                          <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                            {currentProgressPhoto.note &&
+                            currentProgressPhoto.note.trim()
+                              ? currentProgressPhoto.note
+                              : "No note added for this check-in."}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Taken{" "}
+                            {new Date(
+                              currentProgressPhoto.takenAt ||
+                                currentProgressPhoto.createdAt
+                            ).toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
                       </>
                     )}
                   </div>
-                  <button
-                    onClick={handleNextPhoto}
-                    disabled={weeklyPhotos.length <= 1}
-                    className={`p-2 rounded-full border ${
-                      weeklyPhotos.length <= 1
-                        ? "text-gray-300 border-gray-200 cursor-not-allowed"
-                        : "text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                    }`}
-                    aria-label="Next photo"
-                  >
-                    {">"}
-                  </button>
+                  {showProgressNavigation ? (
+                    <button
+                      onClick={handleNextPhoto}
+                      className="h-10 w-10 flex items-center justify-center rounded-full border text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      aria-label="Next photo"
+                    >
+                      {">"}
+                    </button>
+                  ) : (
+                    <div className="w-10 h-10" aria-hidden />
+                  )}
                 </div>
                 <p className="mt-4 text-xs text-gray-500">
                   Photo {currentPhotoIndex + 1} of {weeklyPhotos.length}
                 </p>
+                {currentProgressPhoto && (
+                  <button
+                    onClick={() => handleDeleteWeeklyPhoto(currentProgressPhoto.id)}
+                    disabled={deletingWeeklyPhotoId === currentProgressPhoto.id}
+                    className="mt-3 text-sm text-red-600 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {deletingWeeklyPhotoId === currentProgressPhoto.id
+                      ? "Deleting..."
+                      : "Delete photo"}
+                  </button>
+                )}
               </div>
             ) : (
               <p className="text-center text-gray-500">

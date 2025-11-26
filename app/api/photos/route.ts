@@ -76,3 +76,48 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const photoId = body?.photoId as string | undefined;
+
+    if (!photoId) {
+      return NextResponse.json(
+        { error: "photoId is required" },
+        { status: 400 }
+      );
+    }
+
+    const photo = await prisma.photo.findFirst({
+      where: { id: photoId, userId: session.user.id },
+    });
+
+    if (!photo) {
+      return NextResponse.json(
+        { error: "Photo not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.photo.delete({
+      where: { id: photoId },
+    });
+
+    return NextResponse.json({ message: "Photo deleted" });
+  } catch (error) {
+    console.error("Error deleting photo:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
