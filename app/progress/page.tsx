@@ -180,7 +180,6 @@ export default function ProgressPage() {
               <ProgressGallery
                 photos={photos}
                 onPhotoClick={handlePhotoClick}
-                onViewNote={(photo) => setNotePhoto(photo)}
                 onDelete={(photo) => handleDeletePhoto(photo.id)}
               />
             </div>
