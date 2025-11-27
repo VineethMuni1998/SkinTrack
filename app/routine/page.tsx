@@ -154,7 +154,12 @@ export default function RoutinePage() {
         : "/api/photos";
       const response = await fetch(url, { cache: "no-store" });
       if (!response.ok) {
-        throw new Error("Failed to fetch weekly photos");
+        const data = await response.json().catch(() => ({}));
+        console.error(
+          "Error fetching weekly photos:",
+          data?.error || response.statusText || "Unknown error"
+        );
+        return;
       }
       const data = await response.json();
       const photos = (data.photos || []) as RoutinePhoto[];
@@ -176,8 +181,10 @@ export default function RoutinePage() {
   };
 
   useEffect(() => {
-    fetchWeeklyPhotos(routine?.id);
-  }, [routine?.id]);
+    if (status === "authenticated") {
+      fetchWeeklyPhotos(routine?.id);
+    }
+  }, [status, routine?.id]);
 
   useEffect(() => {
     if (weeklyPhotos.length === 0) {
@@ -646,22 +653,17 @@ export default function RoutinePage() {
       return;
     }
 
-    const swappedProducts = [...orderedProducts];
-    [swappedProducts[currentIndex], swappedProducts[targetIndex]] = [
-      swappedProducts[targetIndex],
-      swappedProducts[currentIndex],
-    ];
-
-    // Preserve shared steps if any by swapping stepOrder values instead of reindexing
+    const updatedProducts = [...orderedProducts];
     const currentStep =
-      swappedProducts[targetIndex].stepOrder ?? targetIndex + 1;
+      updatedProducts[currentIndex].stepOrder ?? currentIndex + 1;
     const targetStep =
-      swappedProducts[currentIndex].stepOrder ?? currentIndex + 1;
+      updatedProducts[targetIndex].stepOrder ?? targetIndex + 1;
 
-    swappedProducts[currentIndex].stepOrder = targetStep;
-    swappedProducts[targetIndex].stepOrder = currentStep;
+    // Swap stepOrder values so ordering is preserved without reindexing shared steps
+    updatedProducts[currentIndex].stepOrder = targetStep;
+    updatedProducts[targetIndex].stepOrder = currentStep;
 
-    const orders = swappedProducts.map((product, index) => ({
+    const orders = updatedProducts.map((product, index) => ({
       routineProductId: product.id,
       stepOrder: product.stepOrder ?? index + 1,
     }));

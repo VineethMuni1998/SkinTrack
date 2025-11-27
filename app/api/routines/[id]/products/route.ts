@@ -121,6 +121,7 @@ export async function POST(
       where: {
         routineId,
         timeOfDay: parsedTimeOfDay,
+        removedAt: null,
       },
       _max: {
         stepOrder: true,
