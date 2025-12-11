@@ -36,11 +36,12 @@ model User {
   skinType      SkinType?
   createdAt     DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  
+
   accounts      Account[]
   sessions      Session[]
   routines      Routine[]
   photos        Photo[]
+  skinAnalyses  SkinAnalysis[]
 }
 
 model Account {
@@ -145,6 +146,34 @@ model Analysis {
   interactions   Json     // Product interactions analysis
   recommendations Json    // AI recommendations
   createdAt      DateTime @default(now())
-  
+
   routine Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+}
+
+model SkinAnalysis {
+  id               String    @id @default(cuid())
+  userId           String
+  imageUrl         String
+  detectedSkinType SkinType?
+  confidence       Float?
+
+  // Skin concerns (0-100 scale)
+  wrinkles         Float?
+  spots            Float?
+  redness          Float?
+  acne             Float?
+  oiliness         Float?
+  darkCircles      Float?
+  texture          Float?
+  moisture         Float?
+
+  rawApiResponse   Json?
+  apiVersion       String?
+  analysisDate     DateTime  @default(now())
+  usedForOnboarding Boolean  @default(false)
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([analysisDate])
 }

@@ -24,6 +24,7 @@ interface ProductListProps {
   ) => void;
   onMergeWithPrevious?: (routineProductId: string, targetStepOrder: number) => void;
   onUnmerge?: (routineProductId: string, nextStepOrder: number) => void;
+  onEdit?: (routineProductId: string, currentSkipDays: string[]) => void;
   timeOfDayContext?: "MORNING" | "NIGHT";
   reorderingProductId?: string | null;
 }
@@ -58,6 +59,7 @@ export default function ProductList({
   onReorder,
   onMergeWithPrevious,
   onUnmerge,
+  onEdit,
   timeOfDayContext,
   reorderingProductId,
 }: ProductListProps) {
@@ -185,6 +187,33 @@ export default function ProductList({
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-2 ml-4">
+                      {onEdit && product.routineProductId && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onEdit(
+                              product.routineProductId!,
+                              product.skipDays || []
+                            )
+                          }
+                          className="text-gray-600 hover:text-indigo-600 transition p-1"
+                          title="Edit frequency"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                        </button>
+                      )}
                       {onReorder && product.routineProductId && (
                         <div className="flex flex-col gap-1">
                           <button
