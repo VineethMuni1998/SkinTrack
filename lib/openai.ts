@@ -77,13 +77,33 @@ ${JSON.stringify(productsList, null, 2)}
 User context:
 ${JSON.stringify(userMeta, null, 2)}
 
-Rules:
-- Only flag conflicts when products are used in the same time of day and on overlapping days. If timeOfDay differs, DO NOT flag as a conflict; instead, adjust recommendation to keep them separated (e.g., Vitamin C AM vs Tretinoin PM).
-- If skipDays are provided, treat those days as "not used" when evaluating conflicts.
-- Prefer pairing synergies that share an active time (MORNING, NIGHT, BOTH). Do not merge unrelated products.
-- Only surface synergies when the products can be used in the same time block (same timeOfDay or one is BOTH). If they do not overlap, add a recommendation about when to co-layer instead of listing under synergies.
-- Use the provided product ids in all outputs to avoid mismatches.
-- Personalize recommendations based on age and skinType. Be gentler for sensitive/younger skin and flag stronger actives or over-exfoliation for delicate skin types. Tailor routine guidance to the skin type.
+CRITICAL RULES FOR SYNERGIES vs RECOMMENDATIONS:
+
+**Product Synergies** - ONLY for products ALREADY being used correctly together:
+- Products that are CURRENTLY in the routine and working well together
+- Products properly layered at the right time of day
+- Products with complementary benefits being used correctly
+- This section is ONLY for praising what's ALREADY WORKING WELL
+- DO NOT suggest any changes or improvements here
+- Example: "CeraVe Cleanser + Vitamin C Serum work well together in your morning routine"
+
+**Recommendations** - ONLY suggest changes or NEW additions:
+1. TIMING CHANGES: Products being used at WRONG time of day (e.g., retinol in morning should move to night, Vitamin C at night should move to morning)
+2. FREQUENCY CHANGES: Products that would benefit from different usage frequency (e.g., use twice daily instead of once, or reduce from daily to every other day)
+3. NEW PRODUCTS: Maximum of 2 NEW products NOT currently in the routine that would benefit the user
+4. NEVER recommend products that are ALREADY in the routine being used correctly
+5. NEVER suggest layering products that are ALREADY in the same time block - they're already layered correctly!
+6. NEVER repeat what's already in synergies section
+
+**Conflict Rules:**
+- Only flag conflicts when products are used in the same time of day and on overlapping days
+- If timeOfDay differs, DO NOT flag as conflict; products are already separated correctly
+- If skipDays are provided, treat those days as "not used" when evaluating conflicts
+
+**General Rules:**
+- Use the provided product ids in all outputs to avoid mismatches
+- Personalize based on age and skinType
+- Be specific and actionable in recommendations
 
 Return JSON with this exact shape:
 {
@@ -100,30 +120,29 @@ Return JSON with this exact shape:
       {
         "productIds": ["<id1>", "<id2>"],
         "reason": "Why they conflict",
-        "recommendation": "What to do about it (include timing guidance if applicable)"
+        "recommendation": "What to do about it"
       }
     ],
     "synergies": [
       {
         "productIds": ["<id1>", "<id2>"],
-        "benefit": "What benefit they provide together",
-        "description": "How they work together or should be layered"
+        "benefit": "What benefit they provide together (currently working well)",
+        "description": "How they work together or should be layered (current good practice)"
       }
     ]
   },
   "recommendations": [
-    "General recommendation 1",
-    "General recommendation 2"
+    "ONLY suggest: (1) timing changes for existing products, (2) frequency changes, or (3) max 2 NEW products to add. DO NOT repeat what's already working."
   ],
   "overallTimeline": "Overall timeline summary for when to expect results from this routine"
 }
 
-Be specific about timelines based on the product types and ingredients. Consider:
-- Retinoids typically take 4-12 weeks
-- Vitamin C can show results in 2-4 weeks
-- Exfoliants (AHA/BHA) can show results in 1-2 weeks
-- Moisturizers and hydrating products show immediate effects
-- Sunscreen is preventive and should be used daily
+Timeline guidelines:
+- Retinoids: 4-12 weeks
+- Vitamin C: 2-4 weeks
+- Exfoliants (AHA/BHA): 1-2 weeks
+- Moisturizers: immediate effects
+- Sunscreen: preventive, daily use
 
 Return ONLY valid JSON, no additional text.`;
 
@@ -205,16 +224,6 @@ Return ONLY valid JSON, no additional text.`;
             .filter(Boolean)
         : [];
 
-    const shareTimeBlock = (ids: string[]) => {
-      if (ids.length < 2) return false;
-      const times = ids
-        .map((id) => productById.get(id)?.timeOfDay || "BOTH")
-        .map((t) => t.toUpperCase());
-      const uniqueTimes = new Set(times.filter(Boolean));
-      if (uniqueTimes.has("BOTH")) return true;
-      return uniqueTimes.size === 1; // all morning or all night
-    };
-
     const conflicts = (interactions.conflicts || [])
       .map((conflict) => ({
         productIds: normalizeIdsArray(conflict.productIds),
@@ -235,23 +244,6 @@ Return ONLY valid JSON, no additional text.`;
       }))
       .filter((entry) => entry.productIds.length >= 2);
 
-    const alignedSynergies = synergies.filter((entry) =>
-      shareTimeBlock(entry.productIds)
-    );
-    const crossTimeSynergies = synergies.filter(
-      (entry) => !shareTimeBlock(entry.productIds)
-    );
-
-    const extraRecommendations =
-      crossTimeSynergies.length > 0
-        ? crossTimeSynergies.map((entry) => {
-            const names = entry.productIds
-              .map((id) => productById.get(id)?.name || id)
-              .join(" + ");
-            return `Consider using ${names} in the same time block (e.g., both AM or both PM) if you want to layer them for synergy: ${entry.description}`;
-          })
-        : [];
-
     const baseRecommendations = Array.isArray(parsed.recommendations)
       ? parsed.recommendations.filter(
           (item): item is string => typeof item === "string"
@@ -262,9 +254,9 @@ Return ONLY valid JSON, no additional text.`;
       timeline,
       interactions: {
         conflicts,
-        synergies: alignedSynergies,
+        synergies,
       },
-      recommendations: [...baseRecommendations, ...extraRecommendations],
+      recommendations: baseRecommendations,
       overallTimeline:
         typeof parsed.overallTimeline === "string" ? parsed.overallTimeline : "",
     };
@@ -321,4 +313,138 @@ Return the ingredients as a single comma-separated list with no additional comme
     throw new Error("No ingredient response from OpenAI");
   }
   return content.replace(/^Ingredients:\s*/i, "");
+}
+
+export interface ProductRecommendation {
+  name: string;
+  brand: string;
+  category: string;
+  reason: string;
+  expectedTimeframe: string;
+}
+
+interface SkinAnalysisInput {
+  skinType: string;
+  concerns: {
+    acne?: number;
+    wrinkles?: number;
+    oiliness?: number;
+    dryness?: number;
+    redness?: number;
+    spots?: number;
+    darkCircles?: number;
+    texture?: number;
+    moisture?: number;
+  };
+}
+
+export async function recommendProducts(
+  skinAnalysis: SkinAnalysisInput
+): Promise<ProductRecommendation[]> {
+  const openai = getOpenAI();
+
+  // Get top 3 concerns (sorted by severity)
+  const topConcerns = Object.entries(skinAnalysis.concerns)
+    .filter(([_, value]) => value && value > 10)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([concern, value]) => ({ concern, severity: value }));
+
+  const concernsText = topConcerns.length > 0
+    ? topConcerns.map(c => `${c.concern} (severity: ${c.severity}%)`).join(', ')
+    : 'general maintenance';
+
+  const prompt = `You are a skincare expert recommending products based on skin analysis.
+
+Skin Analysis:
+- Skin Type: ${skinAnalysis.skinType}
+- Main Concerns: ${concernsText}
+
+Recommend 5-10 skincare products that would be beneficial for this skin profile. Focus on addressing the main concerns while being appropriate for the skin type.
+
+For each product, provide:
+- A specific product name (use real, well-known products when possible)
+- Brand name
+- Category (cleanser, toner, serum, moisturizer, sunscreen, treatment, etc.)
+- Why it's recommended (how it addresses the skin concerns)
+- Expected timeframe for results
+
+Return ONLY valid JSON in this exact format:
+{
+  "recommendations": [
+    {
+      "name": "Product name",
+      "brand": "Brand name",
+      "category": "Product category",
+      "reason": "Why this product is recommended",
+      "expectedTimeframe": "Expected time to see results (e.g., '2-4 weeks')"
+    }
+  ]
+}
+
+Guidelines:
+- Recommend products from various categories (cleanser, treatment, moisturizer, sunscreen, etc.)
+- For acne concerns, consider salicylic acid, benzoyl peroxide, niacinamide
+- For wrinkles/aging, consider retinol, peptides, vitamin C
+- For dryness, consider hyaluronic acid, ceramides, rich moisturizers
+- For oiliness, consider lightweight, oil-free products
+- Always include a sunscreen (crucial for all skin types)
+- Be realistic about timeframes (most actives take 4-12 weeks)
+- Prioritize well-known, accessible brands
+
+Return ONLY valid JSON, no additional text.`;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: ANALYSIS_MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a knowledgeable skincare consultant who recommends products based on skin analysis. You only respond with valid JSON.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error("No response from OpenAI");
+    }
+
+    const parsed = JSON.parse(content) as {
+      recommendations?: Array<{
+        name?: string;
+        brand?: string;
+        category?: string;
+        reason?: string;
+        expectedTimeframe?: string;
+      }>;
+    };
+
+    if (!Array.isArray(parsed.recommendations)) {
+      throw new Error("Invalid response format from OpenAI");
+    }
+
+    // Validate and normalize recommendations
+    const recommendations: ProductRecommendation[] = parsed.recommendations
+      .filter((rec) => rec.name && rec.brand && rec.category)
+      .map((rec) => ({
+        name: rec.name || "",
+        brand: rec.brand || "",
+        category: rec.category || "",
+        reason: rec.reason || "",
+        expectedTimeframe: rec.expectedTimeframe || "4-6 weeks",
+      }));
+
+    return recommendations;
+  } catch (error) {
+    console.error("OpenAI product recommendation error:", error);
+    throw error;
+  }
 }

@@ -82,6 +82,10 @@ export default function RoutinePage() {
   const [skipDays, setSkipDays] = useState<string[]>([]);
   const [specificDays, setSpecificDays] = useState<string[]>([]);
   const [routineActionError, setRoutineActionError] = useState("");
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editUsageMode, setEditUsageMode] = useState<UsageMode>("DAILY");
+  const [editSkipDays, setEditSkipDays] = useState<string[]>([]);
+  const [editSpecificDays, setEditSpecificDays] = useState<string[]>([]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -528,6 +532,90 @@ export default function RoutinePage() {
     }
   };
 
+  const handleEditProduct = (routineProductId: string, currentSkipDays: string[]) => {
+    setEditingProductId(routineProductId);
+
+    // Determine usage mode based on currentSkipDays
+    if (currentSkipDays.length === 0) {
+      setEditUsageMode("DAILY");
+      setEditSkipDays([]);
+      setEditSpecificDays([]);
+    } else if (currentSkipDays.length >= 4) {
+      // Likely "specific days" mode
+      const allDays = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+      const activeDays = allDays.filter(day => !currentSkipDays.includes(day));
+      setEditUsageMode("SPECIFIC_DAYS");
+      setEditSpecificDays(activeDays);
+      setEditSkipDays([]);
+    } else {
+      // Skip days mode
+      setEditUsageMode("SKIP_DAYS");
+      setEditSkipDays(currentSkipDays);
+      setEditSpecificDays([]);
+    }
+  };
+
+  const handleSaveEditProduct = async () => {
+    if (!routine || !editingProductId) return;
+
+    try {
+      // Compute skipDays based on usage mode
+      let finalSkipDays: string[] = [];
+      if (editUsageMode === "DAILY") {
+        finalSkipDays = [];
+      } else if (editUsageMode === "SKIP_DAYS") {
+        finalSkipDays = editSkipDays;
+      } else if (editUsageMode === "SPECIFIC_DAYS") {
+        // For specific days, skipDays are the days NOT selected
+        const allDays = getWeekdayValues();
+        finalSkipDays = allDays.filter(day => !editSpecificDays.includes(day));
+      }
+
+      const response = await fetch(
+        `/api/routines/${routine.id}/products/${editingProductId}/schedule`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skipDays: finalSkipDays }),
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to update product schedule");
+      }
+
+      await fetchRoutine();
+      handleCancelEditProduct();
+    } catch (error) {
+      console.error("Error updating product schedule:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to update product schedule. Please try again."
+      );
+    }
+  };
+
+  const handleCancelEditProduct = () => {
+    setEditingProductId(null);
+    setEditUsageMode("DAILY");
+    setEditSkipDays([]);
+    setEditSpecificDays([]);
+  };
+
+  const handleToggleEditDay = (day: string, type: "skip" | "specific") => {
+    if (type === "skip") {
+      setEditSkipDays((prev) =>
+        prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      );
+    } else {
+      setEditSpecificDays((prev) =>
+        prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      );
+    }
+  };
+
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -824,6 +912,7 @@ export default function RoutinePage() {
                     onReorder={handleProductReorder}
                     onMergeWithPrevious={handleMergeWithPrevious}
                     onUnmerge={handleUnmerge}
+                    onEdit={handleEditProduct}
                     timeOfDayContext="MORNING"
                     reorderingProductId={reorderingProductId}
                     emptyLabel="No morning products yet"
@@ -840,6 +929,7 @@ export default function RoutinePage() {
                     onReorder={handleProductReorder}
                     onMergeWithPrevious={handleMergeWithPrevious}
                     onUnmerge={handleUnmerge}
+                    onEdit={handleEditProduct}
                     timeOfDayContext="NIGHT"
                     reorderingProductId={reorderingProductId}
                     emptyLabel="No night products yet"
@@ -1136,6 +1226,51 @@ export default function RoutinePage() {
                 No weekly progress photos yet.
               </p>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Product Frequency Modal */}
+      {editingProductId && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Edit Product Frequency
+              </h3>
+              <button
+                onClick={handleCancelEditProduct}
+                className="text-gray-500 hover:text-gray-700"
+                aria-label="Close edit modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <UsageSchedulePicker
+                usageMode={editUsageMode}
+                onUsageModeChange={setEditUsageMode}
+                skipDays={editSkipDays}
+                specificDays={editSpecificDays}
+                onToggleDay={handleToggleEditDay}
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelEditProduct}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-700 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEditProduct}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       )}
