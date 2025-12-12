@@ -58,36 +58,101 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Perfect Corp analysis failed:', error);
       if (error instanceof PerfectCorpAPIError) {
-        // Handle specific Perfect Corp API errors
-        if (error.code === 'error_no_face') {
-          return NextResponse.json(
-            { error: "No face detected in the image. Please ensure your face is clearly visible and centered." },
-            { status: 422 }
-          );
+        // Handle specific Perfect Corp API errors based on error codes
+        switch (error.code) {
+          case 'error_no_face':
+            return NextResponse.json(
+              {
+                error: "No face detected in the image. Please ensure your face is clearly visible and centered.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_src_face_too_small':
+            return NextResponse.json(
+              {
+                error: "Your face is too small in the image. Please move closer to the camera or zoom in. The face should occupy 60-80% of the image width.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_src_face_out_of_bound':
+            return NextResponse.json(
+              {
+                error: "Your face is out of bounds. Please center your face within the oval guide and ensure it's fully visible.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_below_min_image_size':
+            return NextResponse.json(
+              {
+                error: "Image resolution is too low. Please use a higher quality camera or upload a larger image.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_exceed_max_image_size':
+            return NextResponse.json(
+              {
+                error: "Image resolution is too high. Please resize the image or use a lower resolution setting.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_lighting_dark':
+            return NextResponse.json(
+              {
+                error: "The lighting is too dark. Please move to a well-lit area with bright, evenly distributed lighting.",
+                errorCode: error.code
+              },
+              { status: 422 }
+            );
+
+          case 'error_nsfw_content_detected':
+            return NextResponse.json(
+              {
+                error: "Unable to analyze this image. Please try again with a clear face photo.",
+                errorCode: error.code
+              },
+              { status: 451 }
+            );
+
+          case 'exceed_max_filesize':
+            return NextResponse.json(
+              {
+                error: "Image file exceeds the maximum allowed size of 10MB.",
+                errorCode: error.code
+              },
+              { status: 413 }
+            );
+
+          default:
+            // Check for rate limiting by status code
+            if (error.statusCode === 429) {
+              return NextResponse.json(
+                {
+                  error: "Rate limit exceeded. Please try again in a few minutes.",
+                  errorCode: 'rate_limit_exceeded'
+                },
+                { status: 429 }
+              );
+            }
+
+            // Generic Perfect Corp error
+            return NextResponse.json(
+              {
+                error: error.message || "Skin analysis failed. Please try again.",
+                errorCode: error.code
+              },
+              { status: 500 }
+            );
         }
-        if (error.code === 'error_nsfw_content_detected') {
-          return NextResponse.json(
-            { error: "Unable to analyze this image. Please try again with a clear face photo." },
-            { status: 451 }
-          );
-        }
-        if (error.code === 'exceed_max_filesize') {
-          return NextResponse.json(
-            { error: "Image file exceeds the maximum allowed size." },
-            { status: 413 }
-          );
-        }
-        if (error.statusCode === 429) {
-          return NextResponse.json(
-            { error: "Rate limit exceeded. Please try again in a few minutes." },
-            { status: 429 }
-          );
-        }
-        // Generic Perfect Corp error
-        return NextResponse.json(
-          { error: error.message || "Skin analysis failed. Please try again." },
-          { status: 500 }
-        );
       }
       // Unknown error
       throw error;

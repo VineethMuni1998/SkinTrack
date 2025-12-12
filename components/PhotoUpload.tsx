@@ -3,6 +3,7 @@
 import { useId, useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Camera, Upload } from "lucide-react";
+import FaceOvalGuide from "./FaceOvalGuide";
 
 interface PhotoUploadProps {
   routineId?: string;
@@ -308,6 +309,8 @@ export default function PhotoUpload({
                     <div className="text-white text-sm">Starting camera...</div>
                   </div>
                 )}
+                {/* Face Oval Guide Overlay */}
+                {stream && <FaceOvalGuide isActive={true} />}
               </div>
 
               <button

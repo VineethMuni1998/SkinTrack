@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Camera, Upload, Loader2 } from "lucide-react";
+import FaceOvalGuide from "./FaceOvalGuide";
+import FaceScanInstructions from "./FaceScanInstructions";
 
 interface SkinAnalysisResult {
   skinType: 'DRY' | 'OILY' | 'COMBINATION' | 'NORMAL' | 'UNKNOWN';
@@ -40,6 +42,7 @@ export default function FaceScanWidget({
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraError, setCameraError] = useState<string>("");
   const [captureMode, setCaptureMode] = useState<'upload' | 'camera'>('camera');
+  const [showInstructions, setShowInstructions] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -213,6 +216,13 @@ export default function FaceScanWidget({
 
   return (
     <div className="space-y-4">
+      {/* Instructions */}
+      {widgetState === 'idle' && showInstructions && (
+        <div className="mb-4">
+          <FaceScanInstructions variant="compact" />
+        </div>
+      )}
+
       {/* Mode Toggle */}
       {isCameraSupported() && widgetState === 'idle' && (
         <div className="flex flex-col sm:flex-row justify-center gap-2">
@@ -312,6 +322,8 @@ export default function FaceScanWidget({
                     <div className="text-white text-sm">Starting camera...</div>
                   </div>
                 )}
+                {/* Face Oval Guide Overlay */}
+                {stream && <FaceOvalGuide isActive={true} />}
               </div>
 
               <button
