@@ -1,21 +1,43 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/routine");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
+        <div className="text-amber-900">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">SkinTrack</h1>
-        <p className="text-lg text-gray-600 mb-8">Track your skincare journey</p>
+    <div className="min-h-screen flex items-center justify-center bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
+      <div className="text-center bg-white/20 backdrop-blur-xl rounded-3xl p-12 border border-white/40 shadow-2xl">
+        <h1 className="text-5xl font-serif text-amber-900 mb-4">SkinTrack</h1>
+        <p className="text-xl text-amber-800 mb-8">Track your skincare journey</p>
         <div className="space-x-4">
           <Link
             href="/login"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            className="px-8 py-3 bg-amber-900 text-amber-50 rounded-2xl hover:bg-amber-800 transition-all shadow-lg hover:shadow-xl font-medium inline-block"
           >
             Login
           </Link>
           <Link
             href="/signup"
-            className="px-6 py-3 bg-white text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50 transition"
+            className="px-8 py-3 bg-white/80 text-amber-900 border border-amber-900/20 rounded-2xl hover:bg-white transition-all shadow-lg hover:shadow-xl font-medium inline-block"
           >
             Sign Up
           </Link>

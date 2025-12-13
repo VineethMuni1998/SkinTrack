@@ -316,16 +316,16 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
       <Navbar />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-white shadow rounded-xl p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Your Profile</h1>
-          <p className="text-sm text-gray-600 mb-4">
+        <div className="bg-white/20 backdrop-blur-xl shadow-2xl rounded-3xl p-6 border border-white/40">
+          <h1 className="text-3xl font-serif font-bold text-amber-900 mb-1">Your Profile</h1>
+          <p className="text-sm text-amber-800 mb-4">
             Update your details to personalize recommendations.
           </p>
-          {message && <p className="text-sm text-green-700 mb-2">{message}</p>}
-          {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
+          {message && <div className="mb-2 bg-green-100/80 backdrop-blur-sm border border-green-300/50 text-green-800 px-3 py-2 rounded-xl"><p className="text-sm">{message}</p></div>}
+          {error && <div className="mb-2 bg-red-100/80 backdrop-blur-sm border border-red-300/50 text-red-800 px-3 py-2 rounded-xl"><p className="text-sm">{error}</p></div>}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -335,7 +335,7 @@ export default function ProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
                 placeholder="Your name"
               />
             </div>
@@ -370,7 +370,7 @@ export default function ProfilePage() {
                   }
                   setDateOfBirth(formatted);
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
                 placeholder="MM/DD/YYYY"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -385,7 +385,7 @@ export default function ProfilePage() {
                 Skin Type
               </label>
               <select
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
                 value={skinType}
                 onChange={(e) => setSkinType(e.target.value)}
               >
@@ -400,7 +400,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              className="bg-amber-700 text-white py-2 px-4 rounded-lg hover:bg-amber-800 transition disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save changes"}
             </button>
@@ -415,35 +415,35 @@ export default function ProfilePage() {
 
           {lastAnalysis ? (
             <div className="space-y-4">
-              <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <p className="text-sm font-medium text-indigo-900">
+                    <p className="text-sm font-medium text-amber-900">
                       Last Analysis
                     </p>
-                    <p className="text-xs text-indigo-600">
+                    <p className="text-xs text-amber-700">
                       {new Date(lastAnalysis.analysisDate).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="px-3 py-1 bg-indigo-200 text-indigo-800 text-sm font-medium rounded-full">
+                  <span className="px-3 py-1 bg-amber-200 text-amber-900 text-sm font-medium rounded-full">
                     {lastAnalysis.skinType}
                   </span>
                 </div>
                 {lastAnalysis.confidence && (
-                  <p className="text-xs text-indigo-700 mb-2">
+                  <p className="text-xs text-amber-800 mb-2">
                     Confidence: {lastAnalysis.confidence.toFixed(1)}%
                   </p>
                 )}
                 {getTopConcerns().length > 0 && (
                   <div>
-                    <p className="text-xs font-medium text-indigo-900 mb-1">
+                    <p className="text-xs font-medium text-amber-900 mb-1">
                       Top Concerns:
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {getTopConcerns().map((concern, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-white text-indigo-700 text-xs rounded-full"
+                          className="px-2 py-1 bg-white text-amber-800 text-xs rounded-full"
                         >
                           {concern.name} ({concern.value}%)
                         </span>
@@ -456,14 +456,14 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleReScan}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition font-medium"
                 >
                   <Scan className="w-4 h-4" />
                   Re-scan Your Skin
                 </button>
                 <button
                   onClick={handleUpdateProducts}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-amber-700 text-amber-700 rounded-lg hover:bg-amber-50 transition font-medium"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   Update Products
@@ -472,15 +472,15 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-                <Scan className="w-8 h-8 text-indigo-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-4">
+                <Scan className="w-8 h-8 text-amber-700" />
               </div>
               <p className="text-gray-600 mb-4">
                 You haven't done a skin analysis yet. Scan your face to get personalized product recommendations!
               </p>
               <button
                 onClick={handleReScan}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition font-medium"
               >
                 <Scan className="w-4 h-4" />
                 Scan Your Skin

@@ -100,7 +100,7 @@ export default function ManualProductInput({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
             placeholder="e.g., Hydrating Facial Cleanser"
           />
         </div>
@@ -119,7 +119,7 @@ export default function ManualProductInput({
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
             placeholder="e.g., CeraVe"
           />
         </div>
@@ -137,7 +137,7 @@ export default function ManualProductInput({
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
           >
             <option value="">Select a category</option>
             <option value="Cleanser">Cleanser</option>
@@ -165,7 +165,7 @@ export default function ManualProductInput({
               type="button"
               onClick={handleAutoFillIngredients}
               disabled={!name || autoFilling}
-              className="text-xs text-indigo-600 hover:text-indigo-700 disabled:opacity-40 flex items-center gap-1 transition"
+              className="text-xs text-amber-700 hover:text-amber-800 disabled:opacity-40 flex items-center gap-1 transition"
             >
               <Sparkles className="w-3 h-3" />
               {autoFilling ? "Finding ingredients..." : "Auto-fill with AI"}
@@ -176,7 +176,7 @@ export default function ManualProductInput({
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
             placeholder="e.g., Hyaluronic Acid, Ceramides, Niacinamide"
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -189,7 +189,7 @@ export default function ManualProductInput({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="flex-1 bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {isSubmitting ? "Adding Product..." : "Add Product"}
           </button>

@@ -142,7 +142,7 @@ export default function ProductRecommendations({
   const getCategoryColor = (category: string) => {
     const normalized = category.toLowerCase();
     if (normalized.includes("cleanser")) return "bg-blue-100 text-blue-700";
-    if (normalized.includes("toner")) return "bg-purple-100 text-purple-700";
+    if (normalized.includes("toner")) return "bg-amber-100 text-amber-700";
     if (normalized.includes("serum")) return "bg-pink-100 text-pink-700";
     if (normalized.includes("moisturizer")) return "bg-green-100 text-green-700";
     if (normalized.includes("sunscreen")) return "bg-yellow-100 text-yellow-700";
@@ -159,7 +159,7 @@ export default function ProductRecommendations({
         onClick={() => toggleSelection(index, section)}
         className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
           isSelected
-            ? "border-indigo-500 bg-indigo-50"
+            ? "border-amber-600 bg-amber-50"
             : "border-gray-200 bg-white hover:border-gray-300"
         }`}
       >
@@ -167,7 +167,7 @@ export default function ProductRecommendations({
           {/* Checkbox Icon */}
           <div className="flex-shrink-0 mt-1">
             {isSelected ? (
-              <CheckCircle2 className="w-6 h-6 text-indigo-600" />
+              <CheckCircle2 className="w-6 h-6 text-amber-700" />
             ) : (
               <Circle className="w-6 h-6 text-gray-400" />
             )}
@@ -248,8 +248,8 @@ export default function ProductRecommendations({
       {nightProducts.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 bg-indigo-100 rounded-lg">
-              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-2 bg-amber-100 rounded-lg">
+              <svg className="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </div>
@@ -266,7 +266,7 @@ export default function ProductRecommendations({
       {/* Add Custom Product Button */}
       <button
         onClick={onAddCustomProduct}
-        className="w-full mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-indigo-600"
+        className="w-full mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-amber-700"
       >
         <Plus className="w-5 h-5" />
         <span className="font-medium">Add Custom Product</span>
@@ -274,8 +274,8 @@ export default function ProductRecommendations({
 
       {/* Selection Summary */}
       {selectedKeys.size > 0 && (
-        <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-          <p className="text-sm text-indigo-700">
+        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-sm text-amber-800">
             {selectedKeys.size} selection{selectedKeys.size !== 1 ? "s" : ""} made ({Array.from(new Set(Array.from(selectedKeys).map(k => k.split('-')[0]))).length} unique product{Array.from(new Set(Array.from(selectedKeys).map(k => k.split('-')[0]))).length !== 1 ? "s" : ""})
           </p>
         </div>
@@ -286,7 +286,7 @@ export default function ProductRecommendations({
         <button
           onClick={handleContinue}
           disabled={isSubmitting}
-          className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium"
+          className="flex-1 bg-amber-700 text-white py-3 px-6 rounded-lg hover:bg-amber-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium"
         >
           {isSubmitting ? (
             "Saving..."

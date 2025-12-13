@@ -102,24 +102,24 @@ export default function TimelinePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Timeline</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-4xl font-serif font-bold text-amber-900">Timeline</h1>
+          <p className="mt-2 text-lg text-amber-800">
             View your skincare journey timeline with product additions, removals, and photos
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mb-6 bg-red-100/80 backdrop-blur-sm border border-red-300/50 text-red-800 px-4 py-3 rounded-xl shadow-md">
             {error}
           </div>
         )}
 
         {!error && routine && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
             <TimelineView
               events={events}
               routineId={routine.id}
@@ -131,13 +131,13 @@ export default function TimelinePage() {
         )}
 
         {!error && !routine && (
-          <div className="bg-white rounded-lg shadow p-6 text-center py-12">
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40 text-center py-12">
+            <p className="text-amber-800 mb-4">
               No routine found. Please create a routine first.
             </p>
             <a
               href="/routine"
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-amber-900 hover:text-amber-800 font-medium underline decoration-amber-600/30 hover:decoration-amber-600/60 transition-colors"
             >
               Go to My Routine →
             </a>

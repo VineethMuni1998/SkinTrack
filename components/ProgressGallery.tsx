@@ -45,7 +45,7 @@ export default function ProgressGallery({
             {beforePhotos.map((photo) => (
               <div
                 key={photo.id}
-                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-indigo-500 transition"
+                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-amber-500 transition"
                 onClick={() => onPhotoClick?.(photo)}
               >
                 <img
@@ -72,7 +72,7 @@ export default function ProgressGallery({
             {afterPhotos.map((photo) => (
               <div
                 key={photo.id}
-                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-indigo-500 transition group"
+                className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 cursor-pointer hover:border-amber-500 transition group"
                 onClick={() => onPhotoClick?.(photo)}
               >
                 <img

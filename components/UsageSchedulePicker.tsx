@@ -56,7 +56,7 @@ export default function UsageSchedulePicker({
               onClick={() => onUsageModeChange(mode.value)}
               className={`px-3 py-1 rounded-full transition ${
                 usageMode === mode.value
-                  ? "bg-white text-indigo-600 shadow"
+                  ? "bg-white text-amber-700 shadow"
                   : "text-gray-500"
               }`}
             >
@@ -83,7 +83,7 @@ export default function UsageSchedulePicker({
                   }
                   className={`px-3 py-1 text-xs rounded-full border transition ${
                     active
-                      ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+                      ? "border-amber-200 bg-amber-50 text-amber-800"
                       : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
                   }`}
                 >
