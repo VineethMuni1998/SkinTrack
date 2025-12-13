@@ -80,7 +80,7 @@ export default function SkinAnalysisResults({
       </div>
 
       {/* Primary Result - Skin Type */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 text-white text-center">
+      <div className="bg-gradient-to-r from-amber-600 to-amber-700 rounded-xl p-6 text-white text-center">
         <div className="flex items-center justify-center mb-2">
           <CheckCircle className="w-6 h-6 mr-2" />
           <span className="text-lg font-medium">Detected Skin Type</span>
@@ -121,7 +121,7 @@ export default function SkinAnalysisResults({
         <button
           onClick={onConfirm}
           disabled={isLoading}
-          className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-amber-700 text-white py-3 px-6 rounded-lg hover:bg-amber-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">

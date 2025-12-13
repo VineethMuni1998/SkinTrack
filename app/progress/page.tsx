@@ -27,6 +27,7 @@ interface Routine {
   status?: string;
   startDate: string;
   routineProducts: Array<{
+    id: string;
     product: {
       id: string;
       name: string;
@@ -120,20 +121,20 @@ export default function ProgressPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Progress</h1>
-                <p className="mt-2 text-gray-600">
+                <h1 className="text-4xl font-serif font-bold text-amber-900">Progress</h1>
+                <p className="mt-2 text-lg text-amber-800">
                   Track your skincare journey with before and after photos
                 </p>
               </div>
               <button
                 onClick={() => setShowPhotoUpload(!showPhotoUpload)}
-                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition"
+                className="bg-amber-900 text-amber-50 px-6 py-3 rounded-xl hover:bg-amber-800 transition-all shadow-lg hover:shadow-xl font-medium"
               >
                 {showPhotoUpload ? "Cancel" : "Upload Photo"}
               </button>
@@ -141,8 +142,8 @@ export default function ProgressPage() {
           </div>
 
           {showPhotoUpload && (
-            <div className="mb-8 bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="mb-8 bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
+              <h2 className="text-2xl font-serif font-semibold text-amber-900 mb-4">
                 Upload Progress Photo
               </h2>
               <PhotoUpload
@@ -176,7 +177,7 @@ export default function ProgressPage() {
               />
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
               <ProgressGallery
                 photos={photos}
                 onPhotoClick={handlePhotoClick}
@@ -186,15 +187,15 @@ export default function ProgressPage() {
           )}
 
           {routine && routine.routineProducts.length > 0 && (
-            <div className="mt-8 bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="mt-8 bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
+              <h2 className="text-2xl font-serif font-semibold text-amber-900 mb-4">
                 Current Routine
               </h2>
               <div className="flex flex-wrap gap-2">
                 {routine.routineProducts.map((rp) => (
                   <span
-                    key={rp.product.id}
-                    className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
+                    key={rp.id}
+                    className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
                   >
                     {rp.product.name}
                   </span>

@@ -360,12 +360,12 @@ function OnboardingContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
-      <div className={`w-full bg-white shadow rounded-xl p-6 ${currentStep === 'productRecommendations' || currentStep === 'manualProductInput' ? 'max-w-5xl' : 'max-w-md'}`}>
+    <div className="min-h-screen flex items-center justify-center bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed px-4 py-8">
+      <div className={`w-full bg-white/30 backdrop-blur-xl shadow-2xl rounded-3xl p-6 border border-white/40 ${currentStep === 'productRecommendations' || currentStep === 'manualProductInput' ? 'max-w-5xl' : 'max-w-md'}`}>
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to SkinTrack</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-3xl font-serif font-bold text-amber-900 mb-2">Welcome to SkinTrack</h1>
+          <p className="text-sm text-amber-800">
             {currentStep === 'dob' && "Let's get started with some basic information."}
             {currentStep === 'skinTypeMethod' && "Choose how you'd like to determine your skin type."}
             {currentStep === 'faceScan' && "Scan your face for AI-powered skin analysis."}
@@ -375,7 +375,7 @@ function OnboardingContent() {
             {currentStep === 'manualProductInput' && "Add a custom product."}
             {currentStep === 'complete' && "Setting up your profile..."}
           </p>
-          <div className="mt-2 text-xs text-indigo-600 font-medium">{getProgressText()}</div>
+          <div className="mt-2 text-xs text-amber-700 font-medium">{getProgressText()}</div>
         </div>
 
         {/* Back Button */}
@@ -416,7 +416,7 @@ function OnboardingContent() {
                   }
                   setDateOfBirth(formatted);
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
                 placeholder="MM/DD/YYYY"
                 required
               />
@@ -426,7 +426,7 @@ function OnboardingContent() {
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition font-medium"
+              className="w-full bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition font-medium"
             >
               Continue
             </button>
@@ -438,14 +438,14 @@ function OnboardingContent() {
           <div className="space-y-3">
             <button
               onClick={() => handleSkinTypeMethodSelect('scan')}
-              className="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition text-left group"
+              className="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-amber-500 hover:bg-amber-50 transition text-left group"
             >
               <div className="flex items-start">
-                <Camera className="w-6 h-6 text-indigo-600 mr-3 mt-1" />
+                <Camera className="w-6 h-6 text-amber-700 mr-3 mt-1" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className="font-semibold text-gray-900">Scan My Face</h3>
-                    <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium">
                       Recommended
                     </span>
                   </div>
@@ -458,10 +458,10 @@ function OnboardingContent() {
 
             <button
               onClick={() => handleSkinTypeMethodSelect('manual')}
-              className="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition text-left"
+              className="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-amber-500 hover:bg-amber-50 transition text-left"
             >
               <div className="flex items-start">
-                <CheckSquare className="w-6 h-6 text-indigo-600 mr-3 mt-1" />
+                <CheckSquare className="w-6 h-6 text-amber-700 mr-3 mt-1" />
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 mb-1">Select Manually</h3>
                   <p className="text-sm text-gray-600">
@@ -507,7 +507,7 @@ function OnboardingContent() {
                 Skin Type
               </label>
               <select
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
                 value={skinType}
                 onChange={(e) => setSkinType(e.target.value)}
                 required
@@ -522,7 +522,7 @@ function OnboardingContent() {
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition font-medium"
+              className="w-full bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition font-medium"
             >
               Continue
             </button>
@@ -570,7 +570,7 @@ function OnboardingContent() {
         {/* Step 6: Completing */}
         {currentStep === 'complete' && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-200 border-t-amber-700 mb-4"></div>
             <p className="text-gray-600">Setting up your profile...</p>
           </div>
         )}

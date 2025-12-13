@@ -784,36 +784,36 @@ export default function RoutinePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[url('/background-pattern.png')] bg-cover bg-center bg-fixed">
       <Navbar />
       <ChatWidget />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Routine</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-4xl font-serif font-bold text-amber-900">My Routine</h1>
+          <p className="mt-2 text-lg text-amber-800">
             Manage your skincare products and get AI-powered insights
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-2xl font-serif font-semibold text-amber-900">
                   Your Products
                 </h2>
                 <button
                   onClick={() => setShowProductForm(!showProductForm)}
-                  className="text-sm text-indigo-600 hover:text-indigo-700"
+                  className="text-sm px-4 py-2 bg-amber-900 text-amber-50 hover:bg-amber-800 rounded-xl transition-all shadow-md hover:shadow-lg font-medium"
                 >
                   {showProductForm ? "Cancel" : "+ Add Product"}
                 </button>
               </div>
 
               {routineActionError && (
-                <p className="mb-4 text-sm text-red-600">
-                  {routineActionError}
-                </p>
+                <div className="mb-4 bg-red-100/80 backdrop-blur-sm border border-red-300/50 text-red-800 px-4 py-3 rounded-xl">
+                  <p className="text-sm">{routineActionError}</p>
+                </div>
               )}
 
               {showProductForm && (
@@ -835,10 +835,10 @@ export default function RoutinePage() {
               {!showProductForm && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-amber-900">
                       Add product to
                     </label>
-                    <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-medium">
+                    <div className="inline-flex rounded-full border border-amber-300/50 bg-white/30 backdrop-blur-sm p-1 text-xs font-medium">
                       {(["MORNING", "NIGHT"] as RoutineTimeOfDay[]).map(
                         (slot) => (
                           <button
@@ -847,8 +847,8 @@ export default function RoutinePage() {
                             onClick={() => setSelectedTimeOfDay(slot)}
                             className={`px-3 py-1 rounded-full transition ${
                               selectedTimeOfDay === slot
-                                ? "bg-white text-indigo-600 shadow"
-                                : "text-gray-500"
+                                ? "bg-amber-900 text-amber-50 shadow-lg"
+                                : "text-amber-700 hover:text-amber-900"
                             }`}
                           >
                             {slot === "MORNING" ? "Morning" : "Night"}
@@ -874,22 +874,22 @@ export default function RoutinePage() {
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                    className="w-full px-4 py-3 bg-white/40 backdrop-blur-sm border border-amber-300/50 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-amber-900 placeholder:text-amber-700/60 transition-all"
                   />
                   {searchQuery && (
-                    <div className="mt-2 max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
+                    <div className="mt-2 max-h-60 overflow-y-auto bg-white/30 backdrop-blur-md border border-amber-300/50 rounded-xl shadow-lg">
                       {filteredProducts.map((product) => (
                         <div
                           key={product.id}
-                          className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                          className="p-3 hover:bg-white/40 cursor-pointer border-b border-amber-200/30 last:border-b-0 transition-colors"
                           onClick={() => {
                             addProductToRoutine(product.id, selectedTimeOfDay);
                             setSearchQuery("");
                           }}
                         >
-                          <div className="font-medium">{product.name}</div>
+                          <div className="font-medium text-amber-900">{product.name}</div>
                           {product.brand && (
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-amber-700">
                               {product.brand}
                             </div>
                           )}
@@ -902,7 +902,7 @@ export default function RoutinePage() {
 
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                  <h3 className="text-base font-serif font-semibold text-amber-900 mb-2">
                     Morning Routine
                   </h3>
                   <ProductList
@@ -919,7 +919,7 @@ export default function RoutinePage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                  <h3 className="text-base font-serif font-semibold text-amber-900 mb-2">
                     Night Routine
                   </h3>
                   <ProductList
@@ -941,41 +941,39 @@ export default function RoutinePage() {
                 <button
                   onClick={() => handleAnalyze()}
                   disabled={analyzing}
-                  className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-4 w-full bg-amber-900 text-amber-50 py-3 px-4 rounded-xl hover:bg-amber-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   {analyzing ? "Analyzing..." : "Analyze Routine with AI"}
                 </button>
               )}
               {analyzeError && (
-                <p className="mt-3 text-sm text-red-600">{analyzeError}</p>
+                <div className="mt-3 bg-red-100/80 backdrop-blur-sm border border-red-300/50 text-red-800 px-4 py-3 rounded-xl">
+                  <p className="text-sm">{analyzeError}</p>
+                </div>
               )}
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-2xl font-serif font-semibold text-amber-900">
                     Weekly Skin Check-In
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-amber-800">
                     Stay consistent by uploading a weekly progress photo.
                   </p>
                 </div>
                 <button
                   onClick={() => setShowProgressModal(true)}
                   disabled={weeklyPhotosLoading}
-                  className={`text-sm px-4 py-2 rounded-lg border ${
-                    weeklyPhotos.length === 0
-                      ? "border-gray-200 text-gray-500 hover:bg-gray-50"
-                      : "border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                  }`}
+                  className="text-sm px-4 py-2 rounded-xl border border-amber-300/50 bg-white/30 backdrop-blur-sm text-amber-900 hover:bg-white/50 transition-all shadow-md hover:shadow-lg font-medium disabled:opacity-50"
                 >
                   See progress
                 </button>
               </div>
 
               {isWeeklyOverdue && (
-                <div className="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="mt-4 bg-yellow-100/80 backdrop-blur-sm border border-yellow-300/50 text-yellow-900 px-4 py-3 rounded-xl flex items-start gap-3 shadow-md">
                   <span className="text-xl">⚠️</span>
                   <div>
                     <p className="font-semibold">Time for a new check-in</p>
@@ -985,32 +983,32 @@ export default function RoutinePage() {
               )}
 
               {weeklyPhotosLoading ? (
-                <p className="mt-4 text-sm text-gray-500">
+                <p className="mt-4 text-sm text-amber-800">
                   Loading your progress photos...
                 </p>
               ) : (
                 <div className="mt-4 space-y-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-amber-800">
                     Last check-in:{" "}
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-amber-900">
                       {lastCheckInLabel}
                     </span>
                   </p>
 
                   {lastWeeklyPhoto ? (
-                    <div className="flex flex-col sm:flex-row gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-amber-300/50 bg-white/30 backdrop-blur-md p-4 shadow-lg">
                       <div className="sm:w-48 w-full">
                         <img
                           src={lastWeeklyPhoto.url}
                           alt="Most recent weekly progress"
-                          className="w-full h-full object-cover rounded-lg bg-white"
+                          className="w-full h-full object-cover rounded-xl bg-white shadow-md"
                         />
                       </div>
                       <div className="flex-1 space-y-2">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-amber-800">
                           Uploaded {lastCheckInLabel}
                         </p>
-                        <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                        <p className="text-sm text-amber-900 whitespace-pre-wrap">
                           {lastWeeklyPhoto.note && lastWeeklyPhoto.note.trim()
                             ? lastWeeklyPhoto.note
                             : "No note added for this check-in."}
@@ -1018,7 +1016,7 @@ export default function RoutinePage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-600">
+                    <div className="rounded-2xl border border-dashed border-amber-300/50 bg-white/20 backdrop-blur-sm p-4 text-sm text-amber-800">
                       No check-ins yet. Upload your first weekly photo to start tracking.
                     </div>
                   )}
@@ -1071,8 +1069,8 @@ export default function RoutinePage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40">
+            <h2 className="text-2xl font-serif font-semibold text-amber-900 mb-4">
               AI Analysis
             </h2>
             {latestAnalysis ? (
@@ -1086,14 +1084,14 @@ export default function RoutinePage() {
                 )}
               />
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-amber-800">
                 <p className="mb-4">
                   Add products to your routine and click "Analyze Routine with AI"
                   to get personalized insights
                 </p>
                 <Link
                   href="/progress"
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-amber-900 hover:text-amber-800 font-medium underline decoration-amber-600/30 hover:decoration-amber-600/60 transition-colors"
                 >
                   View Progress →
                 </Link>
@@ -1104,24 +1102,24 @@ export default function RoutinePage() {
       </div>
 
       {showProgressModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-3xl w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 max-w-3xl w-full mx-4 border border-amber-200/50">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-2xl font-serif font-semibold text-amber-900">
                 Weekly Progress Photos
               </h3>
               <div className="flex items-center gap-3">
                 {calendarDates.length > 0 && (
                   <button
                     onClick={() => setShowCalendarPicker((prev) => !prev)}
-                    className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+                    className="text-sm px-3 py-1.5 rounded-xl border border-amber-300/50 bg-white/40 backdrop-blur-sm text-amber-900 hover:bg-white/60 transition-all shadow-sm"
                   >
                     {showCalendarPicker ? "Hide calendar" : "Calendar view"}
                   </button>
                 )}
                 <button
                   onClick={() => setShowProgressModal(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-amber-700 hover:text-amber-900 transition-colors"
                   aria-label="Close progress modal"
                 >
                   ✕
@@ -1136,7 +1134,7 @@ export default function RoutinePage() {
                     <button
                       key={dateKey}
                       onClick={() => handleSelectCalendarDate(dateKey)}
-                      className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 bg-white hover:bg-indigo-50 hover:border-indigo-200 text-gray-900"
+                      className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 bg-white hover:bg-amber-50 hover:border-amber-200 text-gray-900"
                     >
                       {new Date(dateKey).toLocaleDateString("en-US", {
                         month: "short",
@@ -1154,7 +1152,7 @@ export default function RoutinePage() {
                   {showProgressNavigation ? (
                     <button
                       onClick={handlePrevPhoto}
-                      className="h-10 w-10 flex items-center justify-center rounded-full border text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      className="h-10 w-10 flex items-center justify-center rounded-full border text-amber-700 border-amber-200 hover:bg-amber-50"
                       aria-label="Previous photo"
                     >
                       {"<"}
@@ -1197,7 +1195,7 @@ export default function RoutinePage() {
                   {showProgressNavigation ? (
                     <button
                       onClick={handleNextPhoto}
-                      className="h-10 w-10 flex items-center justify-center rounded-full border text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      className="h-10 w-10 flex items-center justify-center rounded-full border text-amber-700 border-amber-200 hover:bg-amber-50"
                       aria-label="Next photo"
                     >
                       {">"}
@@ -1232,15 +1230,15 @@ export default function RoutinePage() {
 
       {/* Edit Product Frequency Modal */}
       {editingProductId && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 max-w-md w-full mx-4 border border-amber-200/50">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-2xl font-serif font-semibold text-amber-900">
                 Edit Product Frequency
               </h3>
               <button
                 onClick={handleCancelEditProduct}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-amber-700 hover:text-amber-900 transition-colors"
                 aria-label="Close edit modal"
               >
                 ✕
@@ -1260,13 +1258,13 @@ export default function RoutinePage() {
             <div className="flex gap-3">
               <button
                 onClick={handleCancelEditProduct}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-700 font-medium"
+                className="flex-1 px-4 py-2 border border-amber-300/50 bg-white/40 backdrop-blur-sm rounded-xl hover:bg-white/60 transition-all text-amber-900 font-medium shadow-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEditProduct}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                className="flex-1 px-4 py-2 bg-amber-900 text-amber-50 rounded-xl hover:bg-amber-800 transition-all font-medium shadow-lg hover:shadow-xl"
               >
                 Save Changes
               </button>

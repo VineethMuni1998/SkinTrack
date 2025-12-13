@@ -117,7 +117,7 @@ export default function ProductForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
           placeholder="e.g., Retinol Serum"
         />
       </div>
@@ -131,7 +131,7 @@ export default function ProductForm({
           type="text"
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
           placeholder="e.g., The Ordinary"
         />
       </div>
@@ -144,7 +144,7 @@ export default function ProductForm({
           id="category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
         >
           <option value="">Select category</option>
           <option value="Cleanser">Cleanser</option>
@@ -167,7 +167,7 @@ export default function ProductForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
           placeholder="Share how you use it or what it claims to do"
         />
       </div>
@@ -184,7 +184,7 @@ export default function ProductForm({
             type="button"
             onClick={requestIngredients}
             disabled={!name || autoFilling}
-            className="text-xs text-indigo-600 hover:text-indigo-700 disabled:opacity-40"
+            className="text-xs text-amber-700 hover:text-amber-800 disabled:opacity-40"
           >
             {autoFilling ? "Finding..." : "Auto-fill with AI"}
           </button>
@@ -194,7 +194,7 @@ export default function ProductForm({
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
           rows={3}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
           placeholder="e.g., Retinol, Hyaluronic Acid, Niacinamide"
         />
       </div>
@@ -215,7 +215,7 @@ export default function ProductForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+          className="flex-1 bg-amber-700 text-white py-2 px-4 rounded-lg hover:bg-amber-800 transition disabled:opacity-50"
         >
           {submitting ? "Saving..." : "Add Product"}
         </button>

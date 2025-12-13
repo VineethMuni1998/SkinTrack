@@ -210,7 +210,7 @@ export default function PhotoUpload({
             onClick={() => setCaptureMode('upload')}
             className={`flex-1 py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 ${
               captureMode === 'upload'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-amber-700 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -225,7 +225,7 @@ export default function PhotoUpload({
             }}
             className={`flex-1 py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 ${
               captureMode === 'camera'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-amber-700 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -317,7 +317,7 @@ export default function PhotoUpload({
                 type="button"
                 onClick={capturePhoto}
                 disabled={!stream}
-                className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Camera className="w-5 h-5" />
                 Capture Photo
@@ -342,7 +342,7 @@ export default function PhotoUpload({
               setFile(null);
               startCamera();
             }}
-            className="text-sm text-indigo-600 hover:text-indigo-700 underline"
+            className="text-sm text-amber-700 hover:text-amber-800 underline"
           >
             Retake photo
           </button>
@@ -371,7 +371,7 @@ export default function PhotoUpload({
               }
             }}
             placeholder={notePlaceholder ?? "How's your skin this week?"}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             rows={3}
           />
           <div className="text-right text-xs text-gray-500">
@@ -384,7 +384,7 @@ export default function PhotoUpload({
         <button
           onClick={handleUpload}
           disabled={uploading}
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-amber-700 text-white py-2 px-4 rounded-lg hover:bg-amber-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? "Uploading..." : uploadButtonLabel}
         </button>

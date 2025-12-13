@@ -302,7 +302,7 @@ export default function TimelineView({
             id="showRemoved"
             checked={showRemovedProducts}
             onChange={(e) => setShowRemovedProducts(e.target.checked)}
-            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
           />
           <label htmlFor="showRemoved" className="text-sm text-gray-700 cursor-pointer">
             Show removed products
@@ -330,7 +330,7 @@ export default function TimelineView({
                   style={{ minWidth: "250px" }}
                 >
                   {/* Timeline Dot */}
-                  <div className="w-6 h-6 rounded-full border-4 border-white z-10 bg-indigo-500" />
+                  <div className="w-6 h-6 rounded-full border-4 border-white z-10 bg-amber-500" />
 
                   {/* Date Label */}
                   <div className="mt-2 mb-2 text-xs font-semibold text-gray-700">
@@ -382,7 +382,7 @@ export default function TimelineView({
 
                           {/* Expected Timeframe */}
                           {event.expectedResultsTimeframe && !isEnded && (
-                            <div className="text-xs text-indigo-600 mb-2">
+                            <div className="text-xs text-amber-700 mb-2">
                               Expected: {event.expectedResultsTimeframe}
                             </div>
                           )}
@@ -434,7 +434,7 @@ export default function TimelineView({
                                       className={`block text-center text-xs py-2 px-3 rounded cursor-pointer ${
                                         isUploadingBefore || isEnded
                                           ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                          : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                          : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                                       }`}
                                     >
                                       {isUploadingBefore ? "Uploading..." : "Upload Before Photo"}
@@ -474,7 +474,7 @@ export default function TimelineView({
                                       className={`block text-center text-xs py-2 px-3 rounded cursor-pointer ${
                                         isUploadingAfter
                                           ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                          : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                          : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                                       }`}
                                     >
                                       {isUploadingAfter ? "Uploading..." : "Upload After Photo"}
@@ -490,7 +490,7 @@ export default function TimelineView({
                             <div className="flex gap-2 mt-3">
                               <button
                                 onClick={() => handleEditTimeframe(event)}
-                                className="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200"
+                                className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded hover:bg-amber-200"
                               >
                                 Edit Timeframe
                               </button>
@@ -552,7 +552,7 @@ export default function TimelineView({
                 value={removalReason}
                 onChange={(e) => setRemovalReason(e.target.value)}
                 placeholder="e.g., Didn't see results, caused irritation, etc."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
                 rows={3}
               />
             </div>
@@ -636,7 +636,7 @@ export default function TimelineView({
                 value={newTimeframe}
                 onChange={(e) => setNewTimeframe(e.target.value)}
                 placeholder="e.g., 2-4 weeks, 1 month"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Examples: "2-4 weeks", "1 month", "6 weeks"
@@ -645,7 +645,7 @@ export default function TimelineView({
             <div className="flex gap-3">
               <button
                 onClick={handleTimeframeSave}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="flex-1 px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800"
               >
                 Save
               </button>

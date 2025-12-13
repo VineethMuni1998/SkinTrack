@@ -58,13 +58,13 @@ export default function AnalysisTimelineView({
             {timeline.map((item, index) => (
               <div
                 key={item.productId || index}
-                className="border-l-4 border-indigo-500 pl-4 py-2"
+                className="border-l-4 border-amber-500 pl-4 py-2"
               >
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="font-semibold text-gray-900">
                     {item.productName}
                   </h4>
-                  <span className="text-sm font-medium text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">
+                  <span className="text-sm font-medium text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
                     {item.expectedResultsTime}
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export default function AnalysisTimelineView({
           <ul className="space-y-2">
             {recommendations.map((rec, index) => (
               <li key={index} className="flex items-start">
-                <span className="text-indigo-600 mr-2">•</span>
+                <span className="text-amber-700 mr-2">•</span>
                 <span className="text-gray-700">{rec}</span>
               </li>
             ))}

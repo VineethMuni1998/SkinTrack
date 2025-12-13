@@ -9,15 +9,15 @@ interface FaceScanInstructionsProps {
 export default function FaceScanInstructions({ variant = "detailed" }: FaceScanInstructionsProps) {
   if (variant === "compact") {
     return (
-      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
         <div className="flex items-center gap-2 mb-2">
-          <AlertCircle className="w-4 h-4 text-indigo-600" />
-          <span className="text-sm font-medium text-indigo-900">
+          <AlertCircle className="w-4 h-4 text-amber-700" />
+          <span className="text-sm font-medium text-amber-900">
             Photo Guidelines
           </span>
         </div>
 
-        <div className="space-y-2 text-xs text-indigo-900">
+        <div className="space-y-2 text-xs text-amber-900">
           <p className="font-medium">For best results:</p>
           <ul className="space-y-1 ml-4">
             <li className="flex items-start gap-1">

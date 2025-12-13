@@ -41,7 +41,7 @@ export default function BeforeAfterComparison({
         <div>
           <span className="font-medium">Before:</span> {beforeDate}
         </div>
-        <div className="text-indigo-600 font-medium">
+        <div className="text-amber-700 font-medium">
           {daysDiff} days later
         </div>
         <div>

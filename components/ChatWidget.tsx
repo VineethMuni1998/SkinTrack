@@ -150,12 +150,12 @@ export default function ChatWidget() {
   return (
     <>
       <div
-        className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-purple-600 cursor-pointer hover:bg-purple-500 transition"
+        className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-amber-700 cursor-pointer hover:bg-amber-600 transition"
         onClick={handleToggleOpen}
         aria-label="Open skincare chat"
       >
         <Image
-          src="/chat-bot-purple.svg"
+          src="/chat-bot-brown.svg"
           alt="Chat bot"
           width={32}
           height={32}
@@ -191,7 +191,7 @@ export default function ChatWidget() {
                 <div
                   className={`px-3 py-2 rounded-lg text-sm max-w-[80%] ${
                     m.role === "user"
-                      ? "bg-indigo-600 text-white"
+                      ? "bg-amber-700 text-white"
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
@@ -216,12 +216,12 @@ export default function ChatWidget() {
                   }
                 }}
                 placeholder="Ask about your routine, ingredients, or what to add..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent text-gray-900 placeholder:text-gray-400"
               />
               <button
                 onClick={sendMessage}
                 disabled={loading}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+                className="px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition disabled:opacity-50"
               >
                 Send
               </button>

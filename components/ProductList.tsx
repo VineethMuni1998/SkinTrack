@@ -65,7 +65,7 @@ export default function ProductList({
 }: ProductListProps) {
   if (products.length === 0) {
     return (
-      <div className="text-center py-6 text-gray-500 text-sm">
+      <div className="text-center py-6 text-amber-700/70 text-sm">
         {emptyLabel}
       </div>
     );
@@ -107,13 +107,13 @@ export default function ProductList({
         return (
           <div
             key={`step-${group.step}`}
-            className="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition"
+            className="p-4 bg-white/30 backdrop-blur-md border border-amber-300/50 rounded-2xl hover:shadow-lg hover:bg-white/40 transition-all"
           >
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-                <span className="text-indigo-600">Step {group.step}</span>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700 mb-3">
+                <span className="text-amber-900">Step {group.step}</span>
                 {showAlternates && (
-                  <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                  <span className="inline-flex items-center rounded-full bg-amber-100/80 backdrop-blur-sm px-2 py-0.5 text-[11px] font-semibold text-amber-800">
                     Alternates for this step
                   </span>
                 )}
@@ -127,7 +127,7 @@ export default function ProductList({
                       prevGroup.step
                     )
                   }
-                  className="text-xs px-3 py-1 rounded border border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                  className="text-xs px-3 py-1 rounded-xl border border-amber-300/50 bg-white/30 backdrop-blur-sm text-amber-900 hover:bg-white/50 transition-all shadow-sm"
                 >
                   Merge with previous step
                 </button>
@@ -149,39 +149,39 @@ export default function ProductList({
                 return (
                   <div
                     key={product.routineProductId || product.id}
-                    className="flex items-start justify-between gap-3 border border-gray-100 rounded-lg p-3"
+                    className="flex items-start justify-between gap-3 border border-amber-200/30 bg-white/20 backdrop-blur-sm rounded-xl p-3 hover:bg-white/30 transition-colors"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-amber-900">
                           {product.name}
                         </h3>
                         {showAlternates && (
-                          <span className="text-[11px] uppercase tracking-wide text-gray-500">
+                          <span className="text-[11px] uppercase tracking-wide text-amber-700">
                             {idx === 0 ? "Primary" : "Alternate"}
                           </span>
                         )}
                       </div>
                       {(product.brand || product.timeOfDay) && (
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-amber-800 mt-1">
                           {product.brand && <span>{product.brand}</span>}
                           {product.timeOfDay && (
-                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                            <span className="inline-flex items-center rounded-full bg-amber-100/70 backdrop-blur-sm px-2 py-0.5 text-xs font-medium text-amber-800">
                               {formatTimeOfDay(product.timeOfDay)}
                             </span>
                           )}
                         </div>
                       )}
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-amber-700/80 mt-1">
                         {formatSkipDays(product.skipDays)}
                       </div>
                       {product.category && (
-                        <span className="inline-block mt-1 px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded">
+                        <span className="inline-block mt-1 px-2 py-1 text-xs bg-amber-100/80 backdrop-blur-sm text-amber-800 rounded-lg">
                           {product.category}
                         </span>
                       )}
                       {product.ingredients && (
-                        <p className="mt-2 text-sm text-gray-500 line-clamp-2">
+                        <p className="mt-2 text-sm text-amber-700/80 line-clamp-2">
                           {product.ingredients}
                         </p>
                       )}
@@ -196,7 +196,7 @@ export default function ProductList({
                               product.skipDays || []
                             )
                           }
-                          className="text-gray-600 hover:text-indigo-600 transition p-1"
+                          className="text-gray-600 hover:text-amber-700 transition p-1"
                           title="Edit frequency"
                         >
                           <svg
@@ -233,7 +233,7 @@ export default function ProductList({
                               product.originalIndex === 0 ||
                               reorderingProductId !== null
                                 ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50"
-                                : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                                : "text-amber-800 border-amber-200 hover:bg-amber-50"
                             }`}
                           >
                             Move Up
@@ -255,7 +255,7 @@ export default function ProductList({
                               product.originalIndex === products.length - 1 ||
                               reorderingProductId !== null
                                 ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50"
-                                : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                                : "text-amber-800 border-amber-200 hover:bg-amber-50"
                             }`}
                           >
                             Move Down
@@ -271,7 +271,7 @@ export default function ProductList({
                               prev?.stepOrder as number
                             )
                           }
-                          className="text-xs px-2 py-1 rounded border border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                          className="text-xs px-2 py-1 rounded border border-amber-200 text-amber-800 hover:bg-amber-50"
                         >
                           Merge with previous step
                         </button>
