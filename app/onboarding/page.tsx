@@ -522,9 +522,17 @@ function OnboardingContent() {
             </div>
             <button
               type="submit"
-              className="w-full bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition font-medium"
+              disabled={loading}
+              className="w-full bg-amber-700 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition font-medium disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Continue
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                  Analyzing...
+                </>
+              ) : (
+                'Continue'
+              )}
             </button>
           </form>
         )}
